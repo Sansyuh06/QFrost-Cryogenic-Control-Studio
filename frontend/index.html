@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryogenic Surface Code Decoder Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- NAMEPLATE HEADER -->
+        <header class="nameplate">
+            <div class="nameplate-inner">
+                <div class="nameplate-brand">
+                    <h1 class="nameplate-title">CRYOGENIC SURFACE CODE DECODER STUDIO</h1>
+                </div>
+                <div class="nameplate-status">
+                    <div class="status-led" id="status-led"></div>
+                    <span class="status-readout" id="status-readout">STANDBY</span>
+                </div>
+                <div class="nameplate-boot" id="boot-sequence">
+                    <span class="boot-text">INITIALIZING CRYOSTAT...</span>
+                </div>
+            </div>
+            <div class="nameplate-bevel"></div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-grid">
+            <!-- RACK MODULE A - CONTROLS -->
+            <section class="rack-module controls-module" aria-label="Control Panel">
+                <div class="rack-screws">
+                    <span class="screw"></span>
+                    <span class="screw"></span>
+                    <span class="screw"></span>
+                    <span class="screw"></span>
+                </div>
+                
+                <div class="rack-label">RACK MODULE A — CONTROL INTERFACE</div>
+                
+                <div class="control-section">
+                    <label class="control-label">CODE DISTANCE</label>
+                    <div class="slider-group">
+                        <input type="range" id="distance-slider" min="3" max="9" step="2" value="7" class="dial-track">
+                        <span class="dial-readout" id="distance-value">7</span>
+                    </div>
+                    <span class="info-trigger" data-tooltip="Lattice size: (2d-1)×(2d-1) nodes. Larger d = more qubits = harder decoding." aria-label="Info about code distance" tabindex="0">ⓘ</span>
+                </div>
+
+                <div class="control-section">
+                    <label class="control-label">PHYSICAL ERROR RATE (p)</label>
+                    <div class="slider-group">
+                        <input type="range" id="error-slider" min="0.001" max="0.05" step="0.001" value="0.01" class="dial-track">
+                        <span class="dial-readout" id="error-value">0.010</span>
+                    </div>
+                    <span class="info-trigger" data-tooltip="Probability of physical error per qubit. Surface code threshold is ~1%." aria-label="Info about error rate" tabindex="0">ⓘ</span>
+                </div>
+
+                <div class="control-section">
+                    <label class="control-label">DECODER ALGORITHM</label>
+                    <div class="select-wrapper">
+                        <select id="decoder-select" class="rack-select">
+                            <option value="union_find">Union-Find (O(n))</option>
+                            <option value="greedy_mwpm">Greedy MWPM</option>
+                        </select>
+                    </div>
+                    <span class="info-trigger" data-tooltip="Union-Find: Nearly-linear time decoder. Greedy MWPM: Approximation to minimum-weight perfect matching." aria-label="Info about decoders" tabindex="0">ⓘ</span>
+                </div>
+
+                <div class="control-section">
+                    <label class="control-label">CONTROLLER PLACEMENT</label>
+                    <div class="placement-toggle">
+                        <button class="placement-btn active" data-placement="4k" aria-pressed="true">
+                            <span class="placement-temp">4K</span>
+                            <span class="placement-label">SHELF</span>
+                        </button>
+                        <button class="placement-btn" data-placement="300k" aria-pressed="false">
+                            <span class="placement-temp">300K</span>
+                            <span class="placement-label">ROOM TEMP</span>
+                        </button>
+                    </div>
+                    <span class="info-trigger" data-tooltip="4K: Lower latency (80ns cable) but limited compute. 300K: Higher latency (240ns) but full classical compute." aria-label="Info about placement" tabindex="0">ⓘ</span>
+                </div>
+
+                <div class="control-section button-group">
+                    <button id="run-button" class="primary-btn">
+                        <span class="btn-label">RUN REACTION LOOP</span>
+                        <span class="btn-icon">▶</span>
+                    </button>
+                    <button id="validate-button" class="secondary-btn">
+                        <span class="btn-label">CROSS-VALIDATE</span>
+                        <span class="btn-icon">⟷</span>
+                    </button>
+                </div>
+
+                <div class="rack-divider"></div>
+
+                <div class="control-section legend-section">
+                    <label class="control-label">LATTICE LEGEND</label>
+                    <div class="legend-grid">
+                        <div class="legend-item">
+                            <span class="legend-symbol data-qubit"></span>
+                            <span class="legend-text">Data Qubit</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-symbol z-star"></span>
+                            <span class="legend-text">Z-Star (X-detector)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-symbol x-plaquette"></span>
+                            <span class="legend-text">X-Plaquette (Z-detector)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-symbol triggered"></span>
+                            <span class="legend-text">Triggered Syndrome</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-symbol correction"></span>
+                            <span class="legend-text">Correction Chain</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- STAGE COLLAR VIEW - CENTERPIECE -->
+            <section class="stage-collar-container" aria-label="Cryostat Stage View">
+                <svg class="stage-rings" viewBox="0 0 600 600" aria-hidden="true">
+                    <!-- 300K Ring (outermost) -->
+                    <circle class="stage-ring ring-300k" cx="300" cy="300" r="280" />
+                    <text class="ring-label" x="520" y="95">300K</text>
+                    
+                    <!-- 4K Ring -->
+                    <circle class="stage-ring ring-4k" cx="300" cy="300" r="230" />
+                    <text class="ring-label" x="470" y="145">4K</text>
+                    
+                    <!-- 800mK Ring -->
+                    <circle class="stage-ring ring-800mk" cx="300" cy="300" r="180" />
+                    <text class="ring-label" x="420" y="195">800mK</text>
+                    
+                    <!-- 100mK Ring -->
+                    <circle class="stage-ring ring-100mk" cx="300" cy="300" r="130" />
+                    <text class="ring-label" x="370" y="245">100mK</text>
+                    
+                    <!-- 15mK Ring (innermost, lattice boundary) -->
+                    <circle class="stage-ring ring-15mk active" cx="300" cy="300" r="80" />
+                    <text class="ring-label ring-label-inner" x="320" y="295">15mK</text>
+                    
+                    <!-- Connector line to telemetry panel -->
+                    <line class="connector-line" id="connector-line" x1="300" y1="70" x2="300" y2="20" />
+                </svg>
+                
+                <div class="lattice-viewport">
+                    <canvas id="lattice-canvas" width="500" height="500" aria-label="Surface code lattice visualization"></canvas>
+                    <div class="lattice-overlay" id="lattice-loading">
+                        <span class="loading-text">SIMULATING...</span>
+                    </div>
+                </div>
+                
+                <div class="placement-indicator" id="placement-indicator">
+                    <span class="indicator-dot"></span>
+                    <span class="indicator-label">CONTROLLER</span>
+                </div>
+            </section>
+
+            <!-- RACK MODULE B - TELEMETRY -->
+            <section class="rack-module telemetry-module" id="telemetry-panel" aria-label="Telemetry Panel">
+                <div class="rack-screws">
+                    <span class="screw"></span>
+                    <span class="screw"></span>
+                    <span class="screw"></span>
+                    <span class="screw"></span>
+                </div>
+                
+                <div class="rack-label">RACK MODULE B — TELEMETRY</div>
+                
+                <div class="telemetry-grid">
+                    <div class="telemetry-item">
+                        <span class="telemetry-label">T<sub>CIRCUIT_SIM</sub></span>
+                        <span class="telemetry-value" id="t-circuit-sim">— ns</span>
+                        <span class="info-trigger" data-tooltip="Time to simulate stabilizer measurement circuits with Qiskit Aer. This is simulation overhead, not part of the real hardware reaction loop." aria-label="Info about circuit simulation time" tabindex="0">ⓘ</span>
+                    </div>
+                    
+                    <div class="telemetry-item">
+                        <span class="telemetry-label">T<sub>DECODE</sub></span>
+                        <span class="telemetry-value" id="t-decode">— ns</span>
+                        <span class="telemetry-sublabel" id="t-decode-method">batched avg</span>
+                        <span class="info-trigger" id="decode-info" data-tooltip="Awaiting measurement..." aria-label="Info about decode timing methodology" tabindex="0">ⓘ</span>
+                    </div>
+
+                    <div class="telemetry-divider"></div>
+
+                    <div class="telemetry-item physical-constant">
+                        <span class="telemetry-label">T<sub>READOUT</sub></span>
+                        <span class="telemetry-value">300 ns</span>
+                        <span class="constant-badge">CONST</span>
+                        <span class="info-trigger" data-tooltip="Physical constant: cryogenic measurement time from literature, not measured by this app." aria-label="Info about readout time" tabindex="0">ⓘ</span>
+                    </div>
+                    
+                    <div class="telemetry-item physical-constant">
+                        <span class="telemetry-label">T<sub>CABLE</sub></span>
+                        <span class="telemetry-value" id="t-cable">80 ns</span>
+                        <span class="constant-badge">CONST</span>
+                        <span class="info-trigger" data-tooltip="Physical constant: signal propagation latency from literature, depends on classical placement temperature." aria-label="Info about cable time" tabindex="0">ⓘ</span>
+                    </div>
+                    
+                    <div class="telemetry-item computed">
+                        <span class="telemetry-label">T<sub>CYCLE</sub></span>
+                        <span class="telemetry-value" id="t-cycle">— ns</span>
+                        <span class="info-trigger" data-tooltip="Total cycle time: T_readout + T_cable + T_decode. Must be < 1000ns to stay within cryogenic reaction budget." aria-label="Info about cycle time" tabindex="0">ⓘ</span>
+                    </div>
+                    
+                    <div class="telemetry-item budget">
+                        <span class="telemetry-label">BUDGET</span>
+                        <span class="telemetry-value budget-value">1000 ns</span>
+                        <span class="info-trigger" data-tooltip="Cryogenic reaction budget: ~1 microsecond before quantum state decoheres. From literature." aria-label="Info about reaction budget" tabindex="0">ⓘ</span>
+                    </div>
+                </div>
+
+                <div class="verdict-container">
+                    <div class="verdict-badge" id="verdict-badge">
+                        <span class="verdict-state">|ψ<sub>L</sub>⟩</span>
+                        <span class="verdict-text" id="verdict-text">READY</span>
+                    </div>
+                    <div class="verdict-bar">
+                        <div class="bar-fill" id="budget-bar"></div>
+                        <div class="budget-marker"></div>
+                    </div>
+                </div>
+
+                <!-- Cross-validation results (hidden by default) -->
+                <div class="validation-results" id="validation-panel" style="display: none;">
+                    <div class="rack-divider"></div>
+                    <div class="rack-label rack-label-small">CROSS-SDK VALIDATION</div>
+                    <div class="validation-grid">
+                        <div class="validation-item">
+                            <span class="telemetry-label">QISKIT</span>
+                            <span class="telemetry-value" id="qiskit-syndromes">—</span>
+                        </div>
+                        <div class="validation-item">
+                            <span class="telemetry-label">CIRQ</span>
+                            <span class="telemetry-value" id="cirq-syndromes">—</span>
+                        </div>
+                        <div class="validation-item">
+                            <span class="telemetry-label">AGREEMENT</span>
+                            <span class="telemetry-value" id="agreement-rate">—%</span>
+                        </div>
+                    </div>
+                    <p class="methodology-text" id="validation-methodology"></p>
+                </div>
+            </section>
+
+            <!-- NOISE SENSITIVITY PANEL -->
+            <section class="rack-module sensitivity-module" aria-label="Noise Sensitivity Analysis">
+                <div class="rack-screws">
+                    <span class="screw"></span>
+                    <span class="screw"></span>
+                    <span class="screw"></span>
+                    <span class="screw"></span>
+                </div>
+                
+                <div class="rack-label">NOISE SENSITIVITY ANALYSIS — PENNYLANE</div>
+                <p class="panel-note">Separate analysis tool — not part of reaction-loop timing</p>
+                
+                <div class="sensitivity-content">
+                    <div class="chart-container">
+                        <canvas id="sensitivity-chart"></canvas>
+                    </div>
+                    
+                    <div class="sensitivity-sidebar">
+                        <div class="threshold-indicator">
+                            <span class="telemetry-label">THRESHOLD</span>
+                            <span class="threshold-value">~1%</span>
+                            <span class="info-trigger" data-tooltip="Below this error rate, the surface code can correct errors faster than they accumulate." aria-label="Info about threshold" tabindex="0">ⓘ</span>
+                        </div>
+                        
+                        <button id="sensitivity-button" class="secondary-btn">
+                            <span class="btn-label">ANALYZE SENSITIVITY</span>
+                            <span class="btn-icon">◈</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="instrument-footer">
+            <p>SIMULATION ENVIRONMENT — NOT CONNECTED TO REAL QUANTUM HARDWARE</p>
+            <p>All timing measurements are server-side batched averages via <code>perf_counter_ns()</code></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
