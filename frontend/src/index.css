@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #000000;
+  color: #FAFAFA;
+}
+
+/* Grid Background Pattern */
+.grid-bg {
+    background-image: 
+        linear-gradient(to right, #27272A 1px, transparent 1px),
+        linear-gradient(to bottom, #27272A 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: center center;
+}
+
+/* Sparkline simple CSS drawing */
+.sparkline-ok {
+    background: linear-gradient(to right, transparent 0%, transparent 10%, #fff 10%, #fff 20%, transparent 20%, transparent 30%, #fff 30%, #fff 40%, transparent 40%, transparent 50%, #fff 50%, #fff 60%, transparent 60%, transparent 70%, #fff 70%, #fff 80%, transparent 80%, transparent 90%, #fff 90%, #fff 100%);
+    background-size: 100% 2px;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.5;
+}
+
+.sparkline-warn {
+     background: linear-gradient(to right, transparent 0%, transparent 10%, #FFB800 10%, #FFB800 20%, transparent 20%, transparent 30%, #FFB800 30%, #FFB800 40%, transparent 40%, transparent 50%, #FFB800 50%, #FFB800 60%, transparent 60%, transparent 70%, #FFB800 70%, #FFB800 80%, transparent 80%, transparent 90%, #FFB800 90%, #FFB800 100%);
+    background-size: 100% 2px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.sparkline-crit {
+     background: linear-gradient(to right, transparent 0%, transparent 10%, #EF4444 10%, #EF4444 20%, transparent 20%, transparent 30%, #EF4444 30%, #EF4444 40%, transparent 40%, transparent 50%, #EF4444 50%, #EF4444 60%, transparent 60%, transparent 70%, #EF4444 70%, #EF4444 80%, transparent 80%, transparent 90%, #EF4444 90%, #EF4444 100%);
+    background-size: 100% 2px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* ═══════════════════════════════════════════
+   BLUEPRINT CIRCUIT WIREFRAME STYLES
+   ═══════════════════════════════════════════ */
+
+/* Blueprint grid pattern */
+.blueprint-grid {
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Gate entrance animation (staggered via style delay) */
+@keyframes gateEnter {
+  from { opacity: 0; transform: scale(0.4); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Selected gate wireframe pulse */
+@keyframes selectedPulse {
+  0%, 100% { stroke-opacity: 0.5; }
+  50%      { stroke-opacity: 1; }
+}
+
+/* Hot (active execution) red glow */
+@keyframes hotGlow {
+  0%, 100% { filter: drop-shadow(0 0 3px rgba(255,60,60,0.3)); }
+  50%      { filter: drop-shadow(0 0 10px rgba(255,60,60,0.7)); }
+}
+
+/* Wire execution data pulse */
+@keyframes wireExec {
+  from { stroke-dashoffset: 16; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Fade slide up for panels */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Probability bar grow */
+@keyframes barGrow {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Step highlight in timeline */
+@keyframes stepActive {
+  0%, 100% { outline-color: rgba(255,255,255,0.2); }
+  50%      { outline-color: rgba(255,255,255,0.6); }
+}
+
+/* Hot step in timeline */
+@keyframes hotStep {
+  0%, 100% { outline-color: rgba(255,60,60,0.2); }
+  50%      { outline-color: rgba(255,60,60,0.7); }
+}
+
+/* Tooltip */
+.circuit-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 100;
+  background: rgba(0,0,0,0.92);
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 8px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #fff;
+  max-width: 220px;
+  backdrop-filter: blur(8px);
+}
+
+/* Counter animate */
+@keyframes countPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QFrost Vacuum Control</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&amp;family=IBM+Plex+Sans:wght@400;600&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#c8c6c8",
+                        "status-critical": "#EF4444",
+                        "tertiary-fixed": "#e4e1e5",
+                        "inverse-primary": "#5d5f5f",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary-fixed-dim": "#c8c6c8",
+                        "primary-container": "#e2e2e2",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "surface-variant": "#353535",
+                        "surface-container": "#1f1f1f",
+                        "on-tertiary": "#303033",
+                        "on-primary-container": "#636565",
+                        "status-warning": "#FFB800",
+                        "on-primary": "#2f3131",
+                        "text-main": "#FAFAFA",
+                        "surface": "#131313",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#47464a",
+                        "on-tertiary-container": "#656467",
+                        "outline-variant": "#444748",
+                        "error-container": "#93000a",
+                        "text-dim": "#64748B",
+                        "on-secondary-fixed-variant": "#474649",
+                        "primary-fixed": "#e2e2e2",
+                        "inverse-on-surface": "#303030",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-surface-variant": "#c4c7c8",
+                        "surface-container-highest": "#353535",
+                        "surface-container-lowest": "#0e0e0e",
+                        "panel-border": "#27272A",
+                        "inverse-surface": "#e2e2e2",
+                        "secondary-fixed": "#e5e1e4",
+                        "on-surface": "#e2e2e2",
+                        "surface-bright": "#393939",
+                        "on-primary-fixed-variant": "#454747",
+                        "tertiary-fixed-dim": "#c8c6c9",
+                        "primary": "#ffffff",
+                        "on-secondary-container": "#b7b4b7",
+                        "on-secondary": "#313032",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed": "#1b1b1e",
+                        "surface-container-low": "#1b1b1b",
+                        "on-background": "#e2e2e2",
+                        "surface-tint": "#c6c6c7",
+                        "secondary-container": "#474649",
+                        "tertiary": "#ffffff",
+                        "text-muted": "#A1A1AA",
+                        "background": "#131313",
+                        "outline": "#8e9192",
+                        "on-error": "#690005",
+                        "tertiary-container": "#e4e1e5",
+                        "on-secondary-fixed": "#1c1b1d",
+                        "surface-dim": "#131313"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "24px",
+                        "lg": "24px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "margin-mobile": "16px",
+                        "sm": "8px",
+                        "unit": "4px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Oswald"],
+                        "headline-md": ["IBM Plex Sans"],
+                        "body-base": ["IBM Plex Sans"],
+                        "label-caps": ["JetBrains Mono"],
+                        "stat-lg-mobile": ["JetBrains Mono"],
+                        "stat-lg": ["JetBrains Mono"],
+                        "body-bold": ["IBM Plex Sans"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-base": ["12px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "stat-lg-mobile": ["12px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "600" }],
+                        "stat-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "600" }],
+                        "body-bold": ["12px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "600" }]
+                    }
+                }
+            }
+        };
+    </script>
+<style>
+        body { background-color: #000000; color: #e2e2e2; }
+        .bento-panel { border: 1px solid #27272A; background-color: #09090B; padding: 16px; }
+        .hairline-divider { height: 1px; background-color: #27272A; width: 100%; margin: 8px 0; }
+        .control-toggle { display: flex; border: 1px solid #27272A; width: fit-content; }
+        .control-segment { padding: 4px 12px; cursor: pointer; transition: background-color 0.2s; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .control-segment.active { background-color: #ffffff; color: #000000; }
+        .control-segment:not(.active):hover { background-color: #3F3F46; }
+        
+        /* Log terminal scrolling */
+        .log-terminal { max-height: 200px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+        .log-terminal::-webkit-scrollbar { width: 4px; }
+        .log-terminal::-webkit-scrollbar-track { background: #000000; }
+        .log-terminal::-webkit-scrollbar-thumb { background: #27272A; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden font-body-base text-body-base bg-black">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-lowest text-primary h-screen w-[320px] shrink-0 border-r border-panel-border flex flex-col py-md px-md z-10 relative">
+<div class="mb-xl">
+<h1 class="font-display-lg text-display-lg font-bold tracking-tighter text-primary">QFROST</h1>
+<p class="font-label-caps text-label-caps text-text-muted mt-xs">CRYOGENIC-01</p>
+</div>
+<div class="flex-1 space-y-unit">
+<a class="flex items-center px-sm py-sm text-text-muted hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined mr-sm text-[20px]" data-icon="dashboard">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</a>
+<a class="flex items-center px-sm py-sm text-primary bg-surface-container-highest border-l-2 border-primary hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined mr-sm text-[20px]" data-icon="vacuum_pump">vacuum</span>
+<span class="font-label-caps text-label-caps">Vacuum Control</span>
+</a>
+<a class="flex items-center px-sm py-sm text-text-muted hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined mr-sm text-[20px]" data-icon="monitoring">monitoring</span>
+<span class="font-label-caps text-label-caps">Analytics</span>
+</a>
+<a class="flex items-center px-sm py-sm text-text-muted hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined mr-sm text-[20px]" data-icon="settings_input_component">settings_input_component</span>
+<span class="font-label-caps text-label-caps">System Config</span>
+</a>
+</div>
+<div class="mt-auto pt-lg border-t border-panel-border space-y-unit">
+<a class="flex items-center px-sm py-sm text-text-muted hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined mr-sm text-[20px]" data-icon="check_circle">check_circle</span>
+<span class="font-label-caps text-label-caps">System Health</span>
+</a>
+<a class="flex items-center px-sm py-sm text-text-muted hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined mr-sm text-[20px]" data-icon="timer">timer</span>
+<span class="font-label-caps text-label-caps">Uptime</span>
+</a>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col p-lg gap-gutter overflow-y-auto bg-black relative z-0">
+<!-- Header -->
+<header class="flex justify-between items-end mb-sm">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Vacuum Line Schematic</h2>
+<p class="font-label-caps text-label-caps text-text-muted mt-xs">Sub-system: Main Chamber Evacuation</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+<span class="font-label-caps text-label-caps text-primary">System Active</span>
+</div>
+</header>
+<!-- Top Row: Schematic & Main Pressure -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-gutter min-h-[300px]">
+<!-- Schematic Visualizer -->
+<div class="bento-panel xl:col-span-2 flex flex-col relative overflow-hidden">
+<div class="font-label-caps text-label-caps text-text-muted mb-md">Line Schematic</div>
+<!-- SVG Schematic Representation (Simplified for structural framing) -->
+<div class="flex-1 w-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJncmlkIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik0gNDAgMCBMIDAgMCAwIDQwIiBmaWxsPSJub25lIiBzdHJva2U9IiMyNzI3MkEiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] border border-panel-border relative p-md flex items-center justify-center">
+<!-- Abstract Schematic Layout -->
+<div class="flex items-center gap-md relative w-full justify-between">
+<!-- Roughing Pump Block -->
+<div class="flex flex-col items-center">
+<div class="w-16 h-16 border border-panel-border bg-black flex items-center justify-center text-primary mb-sm">
+<span class="material-symbols-outlined" data-icon="cyclone">cyclone</span>
+</div>
+<span class="font-label-caps text-label-caps text-text-muted">RP-01</span>
+<div class="w-2 h-2 rounded-full bg-primary mt-xs"></div> <!-- Status LED -->
+</div>
+<!-- Line connection -->
+<div class="h-px bg-panel-border flex-1 relative">
+<!-- Flow indicator -->
+<div class="absolute top-1/2 left-1/4 -translate-y-1/2 w-1 h-1 bg-primary"></div>
+<div class="absolute top-1/2 left-1/2 -translate-y-1/2 w-1 h-1 bg-primary"></div>
+<div class="absolute top-1/2 left-3/4 -translate-y-1/2 w-1 h-1 bg-primary"></div>
+</div>
+<!-- Gate Valve Block -->
+<div class="flex flex-col items-center">
+<div class="w-12 h-12 border-2 border-primary bg-black flex items-center justify-center text-primary mb-sm">
+<span class="material-symbols-outlined" data-icon="valve">valve</span>
+</div>
+<span class="font-label-caps text-label-caps text-primary">GV-MAIN</span>
+<div class="w-2 h-2 rounded-full bg-status-warning mt-xs"></div> <!-- Status LED: Open/Warning -->
+</div>
+<!-- Line connection -->
+<div class="h-px bg-panel-border flex-1 relative"></div>
+<!-- Turbo Pump Block -->
+<div class="flex flex-col items-center">
+<div class="w-20 h-20 border border-panel-border bg-black flex items-center justify-center text-text-muted mb-sm">
+<span class="material-symbols-outlined text-[32px]" data-icon="turbine">shrine</span>
+</div>
+<span class="font-label-caps text-label-caps text-text-muted">TP-02</span>
+<div class="w-2 h-2 rounded-full bg-status-critical mt-xs"></div> <!-- Status LED: Standby/Fault -->
+</div>
+<!-- Line connection up to chamber -->
+<div class="w-px h-16 bg-panel-border absolute top-0 right-10 -mt-16"></div>
+</div>
+</div>
+</div>
+<!-- Main Pressure Gauge & Telemetry -->
+<div class="bento-panel flex flex-col gap-md">
+<div class="font-label-caps text-label-caps text-text-muted">Main Chamber Pressure</div>
+<div class="flex-1 flex flex-col justify-center items-center py-lg">
+<div class="font-display-lg text-[48px] leading-none text-primary tracking-tighter mb-sm">1.2e-6</div>
+<div class="font-label-caps text-label-caps text-text-muted">mbar</div>
+</div>
+<div class="hairline-divider"></div>
+<div class="grid grid-cols-2 gap-sm">
+<div>
+<div class="font-label-caps text-label-caps text-text-muted mb-xs">Target</div>
+<div class="font-stat-lg text-stat-lg text-primary">1.0e-7</div>
+</div>
+<div>
+<div class="font-label-caps text-label-caps text-text-muted mb-xs">Trend</div>
+<div class="font-stat-lg text-stat-lg text-status-warning flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="trending_down">trending_down</span>
+                            Slow
+                        </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Middle Row: Controls & Sub-Telemetry -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-gutter">
+<!-- Controls Block -->
+<div class="bento-panel xl:col-span-2 flex flex-col gap-md">
+<div class="font-label-caps text-label-caps text-text-muted mb-sm">Hardware Control Overrides</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Roughing Pump Control -->
+<div class="border border-panel-border p-md flex flex-col gap-sm">
+<div class="flex justify-between items-center">
+<span class="font-body-bold text-body-bold text-primary">Roughing Pump</span>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+</div>
+<div class="font-label-caps text-label-caps text-text-muted">RP-01 State</div>
+<div class="control-toggle mt-sm">
+<div class="control-segment active">ON</div>
+<div class="control-segment">OFF</div>
+</div>
+</div>
+<!-- Turbo Pump Control -->
+<div class="border border-panel-border p-md flex flex-col gap-sm">
+<div class="flex justify-between items-center">
+<span class="font-body-bold text-body-bold text-text-muted">Turbo Pump</span>
+<span class="w-2 h-2 rounded-full bg-status-critical"></span>
+</div>
+<div class="font-label-caps text-label-caps text-text-muted">TP-02 State (Interlock)</div>
+<div class="control-toggle mt-sm opacity-50 pointer-events-none">
+<div class="control-segment">ON</div>
+<div class="control-segment active">STANDBY</div>
+</div>
+</div>
+<!-- Gate Valve Control -->
+<div class="border border-panel-border p-md flex flex-col gap-sm">
+<div class="flex justify-between items-center">
+<span class="font-body-bold text-body-bold text-primary">Main Gate Valve</span>
+<span class="w-2 h-2 rounded-full bg-status-warning"></span>
+</div>
+<div class="font-label-caps text-label-caps text-text-muted">GV-MAIN Position</div>
+<div class="control-toggle mt-sm">
+<div class="control-segment active">OPEN</div>
+<div class="control-segment">CLOSE</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Aux Telemetry -->
+<div class="bento-panel flex flex-col gap-sm">
+<div class="font-label-caps text-label-caps text-text-muted mb-sm">Auxiliary Sensors</div>
+<div class="flex justify-between items-center py-xs">
+<span class="font-label-caps text-label-caps text-text-muted">Foreline Press.</span>
+<span class="font-stat-lg text-stat-lg text-primary">2.4e-2 mbar</span>
+</div>
+<div class="hairline-divider !my-0"></div>
+<div class="flex justify-between items-center py-xs">
+<span class="font-label-caps text-label-caps text-text-muted">TP-02 Speed</span>
+<span class="font-stat-lg text-stat-lg text-text-muted">0 Hz</span>
+</div>
+<div class="hairline-divider !my-0"></div>
+<div class="flex justify-between items-center py-xs">
+<span class="font-label-caps text-label-caps text-text-muted">TP-02 Temp</span>
+<span class="font-stat-lg text-stat-lg text-primary">24.1 °C</span>
+</div>
+<div class="hairline-divider !my-0"></div>
+<div class="flex justify-between items-center py-xs">
+<span class="font-label-caps text-label-caps text-text-muted">Cooling Water</span>
+<span class="font-stat-lg text-stat-lg text-primary">OK</span>
+</div>
+</div>
+</div>
+<!-- Bottom Row: Terminal -->
+<div class="bento-panel flex-1 min-h-[150px] flex flex-col">
+<div class="flex justify-between items-center mb-sm">
+<div class="font-label-caps text-label-caps text-text-muted">System Command Log</div>
+<button class="font-label-caps text-label-caps text-text-muted border border-panel-border px-sm py-xs hover:text-primary hover:border-primary transition-colors">EXPORT</button>
+</div>
+<div class="log-terminal flex-1 text-text-muted">
+<div class="py-xs"><span class="text-primary mr-sm">[10:42:01.055]</span> SYNC: Establishing connection to TP-02 controller... OK.</div>
+<div class="py-xs"><span class="text-primary mr-sm">[10:42:05.112]</span> CMD: Roughing pump RP-01 sequence START initiated by Operator.</div>
+<div class="py-xs"><span class="text-primary mr-sm">[10:42:06.000]</span> STATE: RP-01 status -&gt; RUNNING.</div>
+<div class="py-xs"><span class="text-primary mr-sm">[10:45:12.334]</span> SENSOR: Foreline pressure crossed threshold (1.0e-1 mbar).</div>
+<div class="py-xs"><span class="text-status-warning mr-sm">[10:45:15.890]</span> WARN: GV-MAIN commanded OPEN while TP-02 speed &lt; nominal.</div>
+<div class="py-xs"><span class="text-primary mr-sm">[10:45:16.100]</span> STATE: GV-MAIN status -&gt; OPEN.</div>
+<div class="py-xs"><span class="text-status-critical mr-sm">[10:45:18.005]</span> FAULT: TP-02 start interlock active. Main chamber pressure &gt; 1.0e-3 mbar. Start blocked.</div>
+<div class="py-xs"><span class="text-primary mr-sm">[10:48:00.000]</span> TELEMETRY: Routine log marker. Main press: 1.2e-6 mbar.</div>
+<div class="py-xs"><span class="text-primary mr-sm animate-pulse">_</span></div>
+</div>
+</div>
+</main>
+<script>
+        // Simple toggle interaction logic
+        document.querySelectorAll('.control-toggle').forEach(toggle => {
+            if(toggle.classList.contains('pointer-events-none')) return;
+            const segments = toggle.querySelectorAll('.control-segment');
+            segments.forEach(segment => {
+                segment.addEventListener('click', () => {
+                    segments.forEach(s => s.classList.remove('active'));
+                    segment.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body></html>

@@ -34,7 +34,7 @@ class TestTimingIntegrity:
         decoder = SlowDecoder(delay_ms=1)
         result = timed_decode(
             decoder,
-            [],
+            [Ancilla(id="dummy", r=0, c=0, type="Z_star", neighbors=[])],
             lattice,
             min_iterations=10,
             min_total_ns=1_000_000
@@ -65,14 +65,14 @@ class TestTimingIntegrity:
         # Test with 1ms delay
         decoder1 = DelayedDecoder(delay_ms=1)
         result1 = timed_decode(
-            decoder1, [], lattice,
+            decoder1, [Ancilla(id="dummy", r=0, c=0, type="Z_star", neighbors=[])], lattice,
             min_iterations=10, min_total_ns=1_000_000
         )
         
         # Test with 2ms delay
         decoder2 = DelayedDecoder(delay_ms=2)
         result2 = timed_decode(
-            decoder2, [], lattice,
+            decoder2, [Ancilla(id="dummy", r=0, c=0, type="Z_star", neighbors=[])], lattice,
             min_iterations=10, min_total_ns=1_000_000
         )
         
@@ -92,7 +92,7 @@ class TestTimingIntegrity:
                 return []
         
         decoder = DummyDecoder()
-        result = timed_decode(decoder, [], lattice)
+        result = timed_decode(decoder, [Ancilla(id="dummy", r=0, c=0, type="Z_star", neighbors=[])], lattice)
         
         assert 'methodology' in result
         assert 'iterations' in result
@@ -177,7 +177,7 @@ class TestTimingIntegrity:
         
         decoder = VariableDecoder()
         result = timed_decode(
-            decoder, [], lattice,
+            decoder, [Ancilla(id="dummy", r=0, c=0, type="Z_star", neighbors=[])], lattice,
             min_iterations=5,
             min_total_ns=100_000
         )

@@ -1,7 +1,7 @@
 """
 Pydantic models for request/response schemas.
 """
-from typing import List, Optional
+from typing import List, Optional, Dict
 from pydantic import BaseModel, Field
 from dataclasses import dataclass
 
@@ -122,8 +122,10 @@ class SensitivityResponse(BaseModel):
 
 
 class ReactionBudgetRequest(BaseModel):
-    placement: str = Field(..., pattern="^(4k|300k)$")
-    decode_ns: int = Field(..., ge=0)
+    d: int = Field(..., ge=3, le=9)
+    decoder: str = Field(..., pattern="^(unionfind|mwpm)$")
+    placement: str = Field(..., pattern="^(4k_shelf|300k_room_temp)$")
+    active_syndromes: List[dict]
 
 
 class ReactionBudgetResponse(BaseModel):
@@ -134,3 +136,34 @@ class ReactionBudgetResponse(BaseModel):
     budget_ns: int
     status: str
     methodology: str
+
+class ASTParseRequest(BaseModel):
+    source_code: str
+
+class GateObject(BaseModel):
+    name: str
+    qubits: List[int]
+    params: Optional[List[float]] = None
+
+class ASTParseResponse(BaseModel):
+    total_qubits: int
+    cnot_depth: int
+    two_qubit_gates: List[GateObject]
+    mid_circuit_measurements: List[int]
+    circuit_grid: Dict[str, List[GateObject]]  # Mapping column/qubit to gates
+
+class LintHardwareRequest(BaseModel):
+    total_qubits: int
+    cnot_depth: int
+    two_qubit_gates: List[dict]
+    mid_circuit_measurements: List[int]
+
+class LintHardwareResponse(BaseModel):
+    heavy_hex_conflict: bool
+    swap_inflation_tax: int
+    recommended_routing: str
+    spam_error_unmitigated: bool
+    signal_damping_percent: float
+    recommended_filter: str
+    dephasing_threshold_crossed: bool
+    dephasing_status: str

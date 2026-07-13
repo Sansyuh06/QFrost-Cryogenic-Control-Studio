@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QFROST // System Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&amp;family=IBM+Plex+Sans:wght@400;600&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary": "#c8c6c8",
+                        "status-critical": "#EF4444",
+                        "tertiary-fixed": "#e4e1e5",
+                        "inverse-primary": "#5d5f5f",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary-fixed-dim": "#c8c6c8",
+                        "primary-container": "#e2e2e2",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "surface-variant": "#353535",
+                        "surface-container": "#1f1f1f",
+                        "on-tertiary": "#303033",
+                        "on-primary-container": "#636565",
+                        "status-warning": "#FFB800",
+                        "on-primary": "#2f3131",
+                        "text-main": "#FAFAFA",
+                        "surface": "#131313",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#47464a",
+                        "on-tertiary-container": "#656467",
+                        "outline-variant": "#444748",
+                        "error-container": "#93000a",
+                        "text-dim": "#64748B",
+                        "on-secondary-fixed-variant": "#474649",
+                        "primary-fixed": "#e2e2e2",
+                        "inverse-on-surface": "#303030",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-surface-variant": "#c4c7c8",
+                        "surface-container-highest": "#353535",
+                        "surface-container-lowest": "#0e0e0e",
+                        "panel-border": "#27272A",
+                        "inverse-surface": "#e2e2e2",
+                        "secondary-fixed": "#e5e1e4",
+                        "on-surface": "#e2e2e2",
+                        "surface-bright": "#393939",
+                        "on-primary-fixed-variant": "#454747",
+                        "tertiary-fixed-dim": "#c8c6c9",
+                        "primary": "#ffffff",
+                        "on-secondary-container": "#b7b4b7",
+                        "on-secondary": "#313032",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed": "#1b1b1e",
+                        "surface-container-low": "#1b1b1b",
+                        "on-background": "#e2e2e2",
+                        "surface-tint": "#c6c6c7",
+                        "secondary-container": "#474649",
+                        "tertiary": "#ffffff",
+                        "text-muted": "#A1A1AA",
+                        "background": "#131313",
+                        "outline": "#8e9192",
+                        "on-error": "#690005",
+                        "tertiary-container": "#e4e1e5",
+                        "on-secondary-fixed": "#1c1b1d",
+                        "surface-dim": "#131313"
+                    },
+                    fontFamily: {
+                        "display-lg": ["Oswald", "sans-serif"],
+                        "headline-md": ["IBM Plex Sans", "sans-serif"],
+                        "body-base": ["IBM Plex Sans", "sans-serif"],
+                        "label-caps": ["JetBrains Mono", "monospace"],
+                        "stat-lg": ["JetBrains Mono", "monospace"],
+                        "body-bold": ["IBM Plex Sans", "sans-serif"]
+                    },
+                    spacing: {
+                        "margin-desktop": "24px",
+                        "lg": "24px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "margin-mobile": "16px",
+                        "sm": "8px",
+                        "unit": "4px",
+                        "md": "16px"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        /* High-Precision Grid Background */
+        .chart-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, theme('colors.panel-border') 1px, transparent 1px),
+                linear-gradient(to bottom, theme('colors.panel-border') 1px, transparent 1px);
+        }
+        /* Custom Checkbox styles for a technical look */
+        .tech-checkbox:checked { background-color: theme('colors.primary'); border-color: theme('colors.primary'); }
+        .tech-checkbox:focus { ring-color: theme('colors.primary'); }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden antialiased font-body-base text-body-base bg-surface-container-lowest">
+<!-- SideNavBar (from JSON) -->
+<nav class="h-screen w-[320px] shrink-0 bg-surface-container-lowest border-r border-panel-border flex flex-col py-md px-md">
+<!-- Header -->
+<div class="mb-xl flex items-center gap-sm">
+<img alt="Operator Profile" class="w-10 h-10 object-cover" data-alt="A highly detailed, starkly lit operator avatar icon showing a professional in cryogenic gear, pure white against a pitch black background, minimalist vector style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcVTuIBOvpjBiPGngmdHeStZwey2dZrcYFkJcq4Bcps-iZGHC5Z_NO_1bmF7j-jl0W4zWGhxfnwYFyR8eJPeH2AxCqodb-i8GlN3AipAfPJkkLWtiqHPJ6XDrvU3vHk7DK0Z2ossJPXDFfXuvHiCnGs8P82Yr9zGe9y383BpVpeHsZqdWfIbKUW4LLoqnBgZ5gwhiGhkM3qDsy6ZA27hIY1do8_uSPZDyI5NkPhqcEV3Cf5nv-1rh1fy13CO3G4kZfFxBtH53_9QY"/>
+<div>
+<h1 class="font-display-lg text-display-lg font-bold tracking-tighter text-primary">QFROST</h1>
+<p class="font-label-caps text-label-caps text-text-muted">CRYOGENIC-01</p>
+</div>
+</div>
+<!-- Main Tabs -->
+<div class="flex-1 flex flex-col gap-xs">
+<a class="flex items-center gap-md px-sm py-xs text-text-muted hover:text-text-main hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-sm py-xs text-text-muted hover:text-text-main hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">vacuum</span>
+<span class="font-label-caps text-label-caps">Vacuum Control</span>
+</a>
+<!-- Active Tab: Analytics -->
+<a class="flex items-center gap-md px-sm py-xs text-primary bg-surface-container-highest border-l-2 border-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+<span class="font-label-caps text-label-caps">Analytics</span>
+</a>
+<a class="flex items-center gap-md px-sm py-xs text-text-muted hover:text-text-main hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings_input_component</span>
+<span class="font-label-caps text-label-caps">System Config</span>
+</a>
+</div>
+<!-- Footer Tabs -->
+<div class="mt-auto border-t border-panel-border pt-md flex flex-col gap-xs">
+<a class="flex items-center gap-md px-sm py-xs text-text-muted hover:text-text-main hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-status-warning" style="font-variation-settings: 'FILL' 0;">check_circle</span>
+<span class="font-label-caps text-label-caps">System Health</span>
+</a>
+<a class="flex items-center gap-md px-sm py-xs text-text-muted hover:text-text-main hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">timer</span>
+<span class="font-label-caps text-label-caps">Uptime</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden bg-surface">
+<!-- Top Utility Bar (Not TopAppBar JSON, contextual for Analytics) -->
+<header class="h-12 border-b border-panel-border bg-surface flex items-center justify-between px-lg shrink-0">
+<div class="flex items-center gap-md">
+<h2 class="font-headline-md text-headline-md text-primary tracking-tight">Historical Data View</h2>
+<span class="font-label-caps text-label-caps text-text-muted">|</span>
+<span class="font-label-caps text-label-caps text-text-muted">T-MINUS 24H</span>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-xs border border-panel-border bg-transparent text-primary font-label-caps text-label-caps hover:bg-surface-variant transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">download</span> CSV
+                </button>
+<button class="px-md py-xs border border-panel-border bg-transparent text-primary font-label-caps text-label-caps hover:bg-surface-variant transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">data_object</span> JSON
+                </button>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="flex-1 flex p-lg gap-gutter overflow-hidden">
+<!-- Left Config/Stats Sidebar (260px) -->
+<div class="w-[260px] flex flex-col gap-md shrink-0 h-full overflow-y-auto">
+<!-- Sensor Visibility Panel -->
+<section class="border border-panel-border bg-surface-container-low p-md">
+<h3 class="font-label-caps text-label-caps text-text-muted mb-md border-b border-panel-border pb-xs">DATA STREAMS</h3>
+<div class="flex flex-col gap-sm">
+<label class="flex items-center gap-sm cursor-pointer hover:bg-surface-variant p-xs transition-colors border border-transparent hover:border-panel-border">
+<input checked="" class="tech-checkbox bg-surface border-panel-border text-primary rounded-none focus:ring-0 w-4 h-4" type="checkbox"/>
+<span class="font-label-caps text-label-caps text-primary">TEMP_MAIN_CORE</span>
+<div class="ml-auto w-2 h-2 rounded-full bg-primary"></div>
+</label>
+<label class="flex items-center gap-sm cursor-pointer hover:bg-surface-variant p-xs transition-colors border border-transparent hover:border-panel-border">
+<input checked="" class="tech-checkbox bg-surface border-panel-border text-primary rounded-none focus:ring-0 w-4 h-4" type="checkbox"/>
+<span class="font-label-caps text-label-caps text-primary">PRESS_VAC_CHAMBER</span>
+<div class="ml-auto w-2 h-2 rounded-full bg-text-muted"></div>
+</label>
+<label class="flex items-center gap-sm cursor-pointer hover:bg-surface-variant p-xs transition-colors border border-transparent hover:border-panel-border">
+<input class="tech-checkbox bg-surface border-panel-border text-primary rounded-none focus:ring-0 w-4 h-4" type="checkbox"/>
+<span class="font-label-caps text-label-caps text-text-muted">TEMP_STAGE_1</span>
+<div class="ml-auto w-2 h-2 rounded-full bg-status-warning"></div>
+</label>
+<label class="flex items-center gap-sm cursor-pointer hover:bg-surface-variant p-xs transition-colors border border-transparent hover:border-panel-border">
+<input class="tech-checkbox bg-surface border-panel-border text-primary rounded-none focus:ring-0 w-4 h-4" type="checkbox"/>
+<span class="font-label-caps text-label-caps text-text-muted">TEMP_STAGE_2</span>
+<div class="ml-auto w-2 h-2 rounded-full bg-status-critical"></div>
+</label>
+</div>
+</section>
+<!-- Statistics Panel -->
+<section class="border border-panel-border bg-surface-container-low flex flex-col flex-1">
+<h3 class="font-label-caps text-label-caps text-text-muted m-md border-b border-panel-border pb-xs shrink-0">STATISTICS SUMMARY</h3>
+<div class="flex flex-col gap-0 px-md pb-md overflow-y-auto">
+<!-- Stat Block -->
+<div class="py-sm border-b border-panel-border">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-caps text-label-caps text-text-dim">MIN TEMP</span>
+<span class="font-label-caps text-label-caps text-text-muted">-273.15 °C</span>
+</div>
+<div class="font-stat-lg text-stat-lg text-primary">0.0001 K</div>
+</div>
+<!-- Stat Block -->
+<div class="py-sm border-b border-panel-border">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-caps text-label-caps text-text-dim">MAX TEMP</span>
+<span class="font-label-caps text-label-caps text-text-muted">T-18H</span>
+</div>
+<div class="font-stat-lg text-stat-lg text-primary">4.2150 K</div>
+</div>
+<!-- Stat Block -->
+<div class="py-sm border-b border-panel-border">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-caps text-label-caps text-text-dim">AVG PRESSURE</span>
+</div>
+<div class="font-stat-lg text-stat-lg text-primary">1.2e-7 mbar</div>
+</div>
+<!-- Stability Metric -->
+<div class="py-sm mt-auto">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-caps text-label-caps text-text-dim">THERMAL STABILITY</span>
+<span class="font-label-caps text-label-caps text-text-muted">σ = 0.002</span>
+</div>
+<!-- Segmented Bar -->
+<div class="flex gap-[1px] h-2 mt-sm">
+<div class="flex-1 bg-primary"></div>
+<div class="flex-1 bg-primary"></div>
+<div class="flex-1 bg-primary"></div>
+<div class="flex-1 bg-surface-variant"></div>
+<div class="flex-1 bg-surface-variant"></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Main Chart Area -->
+<div class="flex-1 border border-panel-border bg-surface-container-low flex flex-col relative">
+<h3 class="font-label-caps text-label-caps text-text-muted absolute top-md left-md z-10 bg-surface-container px-sm py-xs border border-panel-border">TEMP vs PRESSURE [24H]</h3>
+<!-- Chart Canvas Placeholder -->
+<div class="flex-1 w-full h-full chart-grid relative p-xl overflow-hidden">
+<!-- Y Axis Left -->
+<div class="absolute left-0 top-0 bottom-0 w-xl border-r border-panel-border flex flex-col justify-between py-xl text-right pr-xs">
+<span class="font-label-caps text-[10px] text-text-dim">10 K</span>
+<span class="font-label-caps text-[10px] text-text-dim">5 K</span>
+<span class="font-label-caps text-[10px] text-text-dim">0 K</span>
+</div>
+<!-- Faux Chart Lines (SVG for crispness) -->
+<svg class="absolute inset-0 w-full h-full pl-xl pb-xl" preserveaspectratio="none" viewbox="0 0 1000 500">
+<!-- Temperature Line (Primary/White) -->
+<path class="text-primary" d="M 0 450 L 100 440 L 200 445 L 300 430 L 400 480 L 500 485 L 600 482 L 700 485 L 800 484 L 900 485 L 1000 485" fill="none" stroke="currentColor" stroke-width="2"></path>
+<!-- Pressure Line (Muted/Stippled) -->
+<path class="text-text-muted" d="M 0 100 L 100 120 L 200 150 L 300 110 L 400 100 L 500 95 L 600 90 L 700 95 L 800 90 L 900 95 L 1000 90" fill="none" stroke="currentColor" stroke-dasharray="4,4" stroke-width="1"></path>
+</svg>
+<!-- Y Axis Right -->
+<div class="absolute right-0 top-0 bottom-0 w-xl border-l border-panel-border flex flex-col justify-between py-xl pl-xs">
+<span class="font-label-caps text-[10px] text-text-dim">1e-5</span>
+<span class="font-label-caps text-[10px] text-text-dim">1e-6</span>
+<span class="font-label-caps text-[10px] text-text-dim">1e-8</span>
+</div>
+<!-- X Axis Bottom -->
+<div class="absolute bottom-0 left-xl right-xl h-xl border-t border-panel-border flex justify-between items-end pb-xs px-xs">
+<span class="font-label-caps text-[10px] text-text-dim">-24H</span>
+<span class="font-label-caps text-[10px] text-text-dim">-12H</span>
+<span class="font-label-caps text-[10px] text-text-dim">NOW</span>
+</div>
+<!-- Cursor line effect (inline JS interaction would handle position, this is static demo) -->
+<div class="absolute top-0 bottom-0 w-px bg-panel-border left-1/2 pointer-events-none">
+<div class="absolute top-0 -translate-x-1/2 bg-surface border border-panel-border px-xs py-[2px] font-label-caps text-[9px] text-text-main">-12H 00M</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

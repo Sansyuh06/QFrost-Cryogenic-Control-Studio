@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QFROST // Main Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&amp;family=JetBrains+Mono:wght@600&amp;family=Oswald:wght@700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary": "#c8c6c8",
+                      "status-critical": "#EF4444",
+                      "tertiary-fixed": "#e4e1e5",
+                      "inverse-primary": "#5d5f5f",
+                      "surface-container-high": "#2a2a2a",
+                      "secondary-fixed-dim": "#c8c6c8",
+                      "primary-container": "#e2e2e2",
+                      "primary-fixed-dim": "#c6c6c7",
+                      "surface-variant": "#353535",
+                      "surface-container": "#1f1f1f",
+                      "on-tertiary": "#303033",
+                      "on-primary-container": "#636565",
+                      "status-warning": "#FFB800",
+                      "on-primary": "#2f3131",
+                      "text-main": "#FAFAFA",
+                      "surface": "#131313",
+                      "on-error-container": "#ffdad6",
+                      "on-tertiary-fixed-variant": "#47464a",
+                      "on-tertiary-container": "#656467",
+                      "outline-variant": "#444748",
+                      "error-container": "#93000a",
+                      "text-dim": "#64748B",
+                      "on-secondary-fixed-variant": "#474649",
+                      "primary-fixed": "#e2e2e2",
+                      "inverse-on-surface": "#303030",
+                      "on-primary-fixed": "#1a1c1c",
+                      "on-surface-variant": "#c4c7c8",
+                      "surface-container-highest": "#353535",
+                      "surface-container-lowest": "#0e0e0e",
+                      "panel-border": "#27272A",
+                      "inverse-surface": "#e2e2e2",
+                      "secondary-fixed": "#e5e1e4",
+                      "on-surface": "#e2e2e2",
+                      "surface-bright": "#393939",
+                      "on-primary-fixed-variant": "#454747",
+                      "tertiary-fixed-dim": "#c8c6c9",
+                      "primary": "#ffffff",
+                      "on-secondary-container": "#b7b4b7",
+                      "on-secondary": "#313032",
+                      "error": "#ffb4ab",
+                      "on-tertiary-fixed": "#1b1b1e",
+                      "surface-container-low": "#1b1b1b",
+                      "on-background": "#e2e2e2",
+                      "surface-tint": "#c6c6c7",
+                      "secondary-container": "#474649",
+                      "tertiary": "#ffffff",
+                      "text-muted": "#A1A1AA",
+                      "background": "#131313",
+                      "outline": "#8e9192",
+                      "on-error": "#690005",
+                      "tertiary-container": "#e4e1e5",
+                      "on-secondary-fixed": "#1c1b1d",
+                      "surface-dim": "#131313"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-desktop": "24px",
+                      "lg": "24px",
+                      "gutter": "24px",
+                      "xs": "4px",
+                      "xl": "32px",
+                      "margin-mobile": "16px",
+                      "sm": "8px",
+                      "unit": "4px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "display-lg": [
+                              "Oswald"
+                      ],
+                      "headline-md": [
+                              "IBM Plex Sans"
+                      ],
+                      "body-base": [
+                              "IBM Plex Sans"
+                      ],
+                      "label-caps": [
+                              "JetBrains Mono"
+                      ],
+                      "stat-lg-mobile": [
+                              "JetBrains Mono"
+                      ],
+                      "stat-lg": [
+                              "JetBrains Mono"
+                      ],
+                      "body-bold": [
+                              "IBM Plex Sans"
+                      ]
+              },
+              "fontSize": {
+                      "display-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-base": [
+                              "12px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "0",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "11px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "stat-lg-mobile": [
+                              "12px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "0",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "stat-lg": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-bold": [
+                              "12px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "0",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body { background-color: #000000; color: #FAFAFA; }
+        
+        /* Grid Background Pattern */
+        .grid-bg {
+            background-image: 
+                linear-gradient(to right, #27272A 1px, transparent 1px),
+                linear-gradient(to bottom, #27272A 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-position: center center;
+        }
+
+        /* Sparkline simple CSS drawing */
+        .sparkline-ok {
+            background: linear-gradient(to right, transparent 0%, transparent 10%, #fff 10%, #fff 20%, transparent 20%, transparent 30%, #fff 30%, #fff 40%, transparent 40%, transparent 50%, #fff 50%, #fff 60%, transparent 60%, transparent 70%, #fff 70%, #fff 80%, transparent 80%, transparent 90%, #fff 90%, #fff 100%);
+            background-size: 100% 2px;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.5;
+        }
+        
+        .sparkline-warn {
+             background: linear-gradient(to right, transparent 0%, transparent 10%, #FFB800 10%, #FFB800 20%, transparent 20%, transparent 30%, #FFB800 30%, #FFB800 40%, transparent 40%, transparent 50%, #FFB800 50%, #FFB800 60%, transparent 60%, transparent 70%, #FFB800 70%, #FFB800 80%, transparent 80%, transparent 90%, #FFB800 90%, #FFB800 100%);
+            background-size: 100% 2px;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.8;
+        }
+
+        .pulse-led {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; box-shadow: 0 0 8px #fff; }
+            100% { opacity: 0.5; }
+        }
+        
+        .led-critical {
+             box-shadow: 0 0 8px #EF4444;
+        }
+    </style>
+</head>
+<body class="h-screen w-full flex overflow-hidden font-body-base bg-black text-text-main">
+<!-- SideNavBar Component -->
+<nav class="h-screen w-[320px] shrink-0 border-r border-panel-border bg-surface-container-lowest flex flex-col py-md px-md hidden xl:flex z-20">
+<!-- Brand Header -->
+<div class="flex items-center gap-md mb-xl pb-md border-b border-panel-border">
+<div class="w-10 h-10 bg-surface-variant flex items-center justify-center border border-panel-border" data-alt="A macro shot of frosted, brushed metal with a highly technical, industrial aesthetic. The texture is cold and pristine, illuminated by stark, high-contrast white lighting against a deep black void. A subtle hint of crystalline ice forms on the edge. The mood is clinical and ultra-modern, fitting for a cryogenic laboratory interface element." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCA032STqk4Ejz7Y2v5CbBrvbJENhw1nFVg63NXJMl32sVxZ9CWU2-65pzc_RfjKde8RpJVccPBFdUvU9BOUd0oShwJWOpJmAdijxLWKQcGpwchOTEeVG0YnWDee7SB0wrS4109NGBxx7Tb3IOmhTUo5FKec6lcRCmW7Iq8X29qN4e_Z7Rm4bWcYwhGLGrI-RugHPnW9Ir7KXCPpp_T7h5-XjRDbGUKifPQva1X-ftt4WzfrKq2yXodVmB7bkrh-YAG06eqrExIc7U')">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">ac_unit</span>
+</div>
+<div>
+<h1 class="font-display-lg text-display-lg font-bold tracking-tighter text-primary">QFROST</h1>
+<div class="font-label-caps text-label-caps text-text-muted mt-xs">CRYOGENIC-01</div>
+</div>
+</div>
+<!-- Main Navigation -->
+<div class="flex-1 flex flex-col gap-sm">
+<a class="flex items-center gap-md px-sm py-sm text-primary bg-surface-container-highest border-l-2 border-primary transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm text-text-muted hover:text-text-main hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">vacuum</span>
+<span class="font-label-caps text-label-caps">Vacuum Control</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm text-text-muted hover:text-text-main hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-label-caps text-label-caps">Analytics</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm text-text-muted hover:text-text-main hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span class="font-label-caps text-label-caps">System Config</span>
+</a>
+</div>
+<!-- Footer Navigation -->
+<div class="mt-auto flex flex-col gap-sm border-t border-panel-border pt-md">
+<a class="flex items-center gap-md px-sm py-sm text-text-muted hover:text-text-main hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">check_circle</span>
+<span class="font-label-caps text-label-caps">System Health</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm text-text-muted hover:text-text-main hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined">timer</span>
+<span class="font-label-caps text-label-caps">Uptime</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col h-screen overflow-hidden bg-black relative">
+<!-- TopAppBar Component -->
+<header class="flex justify-between items-center w-full px-lg h-12 bg-surface border-b border-panel-border shrink-0 z-20">
+<div class="font-label-caps text-label-caps tracking-[0.2em] text-primary">QFROST // ABSOLUTE ZERO</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-text-muted text-sm">search</span>
+<input class="bg-black border border-panel-border text-primary font-label-caps text-label-caps pl-xl pr-sm py-xs w-64 focus:border-primary focus:ring-0 focus:outline-none transition-colors" placeholder="COMMAND LINE" type="text"/>
+</div>
+<div class="flex items-center gap-sm ml-md border-l border-panel-border pl-md">
+<button class="text-text-dim hover:text-primary transition-colors hover:scale-95 active:opacity-80 p-xs">
+<span class="material-symbols-outlined">notifications_active</span>
+</button>
+<button class="text-text-dim hover:text-primary transition-colors hover:scale-95 active:opacity-80 p-xs">
+<span class="material-symbols-outlined">emergency_home</span>
+</button>
+<button class="text-text-dim hover:text-status-critical transition-colors hover:scale-95 active:opacity-80 p-xs">
+<span class="material-symbols-outlined">power_settings_new</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Canvas Area (Bento Grid) -->
+<main class="flex-1 overflow-auto p-md grid-bg relative">
+<div class="grid grid-cols-12 gap-md h-full min-h-[800px]">
+<!-- Left Column: Temperature Telemetry -->
+<div class="col-span-12 lg:col-span-3 flex flex-col gap-md">
+<div class="bg-surface border border-panel-border p-md flex flex-col relative overflow-hidden group hover:border-surface-variant transition-colors">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-label-caps text-label-caps text-text-muted">T1 STAGE 1</span>
+<div class="w-2 h-2 rounded-full bg-primary pulse-led"></div>
+</div>
+<div class="font-stat-lg text-[2rem] leading-none text-primary mb-md">4.20 <span class="text-sm text-text-muted">K</span></div>
+<div class="h-8 w-full sparkline-ok"></div>
+</div>
+<div class="bg-surface border border-panel-border p-md flex flex-col relative overflow-hidden group hover:border-surface-variant transition-colors">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-label-caps text-label-caps text-text-muted">T2 STAGE 2</span>
+<div class="w-2 h-2 rounded-full bg-primary pulse-led"></div>
+</div>
+<div class="font-stat-lg text-[2rem] leading-none text-primary mb-md">1.50 <span class="text-sm text-text-muted">K</span></div>
+<div class="h-8 w-full sparkline-ok"></div>
+</div>
+<div class="bg-surface border border-panel-border border-l-2 border-l-status-warning p-md flex flex-col relative overflow-hidden group transition-colors">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-label-caps text-label-caps text-status-warning">T3 MIXING CHAMBER</span>
+<div class="w-2 h-2 rounded-full bg-status-warning"></div>
+</div>
+<div class="font-stat-lg text-[2rem] leading-none text-status-warning mb-md">0.85 <span class="text-sm text-text-muted">mK</span></div>
+<div class="h-8 w-full sparkline-warn"></div>
+</div>
+<div class="bg-surface border border-panel-border p-md flex flex-col relative overflow-hidden group hover:border-surface-variant transition-colors">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-label-caps text-label-caps text-text-muted">T4 STILL</span>
+<div class="w-2 h-2 rounded-full bg-primary pulse-led"></div>
+</div>
+<div class="font-stat-lg text-[2rem] leading-none text-primary mb-md">850 <span class="text-sm text-text-muted">mK</span></div>
+<div class="h-8 w-full sparkline-ok"></div>
+</div>
+</div>
+<!-- Center Column: 3D Schematic & Core Status -->
+<div class="col-span-12 lg:col-span-6 flex flex-col gap-md">
+<!-- 3D Viewport Placeholder -->
+<div class="flex-1 bg-surface border border-panel-border relative overflow-hidden flex items-center justify-center min-h-[400px]">
+<!-- Abstract Background for 3D area -->
+<div class="absolute inset-0 opacity-20" data-alt="A highly abstract, wireframe 3D rendering of a complex cryogenic cooling system. Thin, glowing white lines construct the cylindrical geometry of the cryostat against a pure black background. The image has a low-opacity, technical HUD feel, strictly monochrome, evoking extreme precision and scientific measurement." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDmqfl8zlE2Padle8NhrJnPCxZyeDD2QAjbHDWD1aXsRUZvRiikvVkC6EaFN9eM9EqQKFiZsoioJzeZGnfI8BJ2mEk4MY3LU7wvq6QsEQdPniw1MczXkndzCHcIqweMJLJUqX_N0P5568-rtBNQexiVhzL89cYc-DrK2GlkHGQAwn7IKPOUXh1EJGlJ5IerAmvpg7uWmtL_-8LKcaWNFeaTNHKPiJSVyPNbaijig1VjISBcX2KbK6zB641iqd3AwIroZoAMEex6o0w')"></div>
+<!-- Center Core Overlay -->
+<div class="absolute z-10 flex flex-col items-center">
+<div class="w-32 h-32 rounded-full border border-panel-border flex items-center justify-center relative">
+<div class="absolute inset-2 rounded-full border border-dashed border-text-muted animate-[spin_20s_linear_infinite]"></div>
+<div class="w-16 h-16 bg-black border border-primary rounded-full flex flex-col items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+<span class="font-stat-lg text-primary text-xl">OK</span>
+</div>
+</div>
+<div class="mt-md px-md py-xs border border-panel-border bg-black/50 backdrop-blur-sm font-label-caps text-label-caps tracking-widest">CRYOSTAT ACTIVE</div>
+</div>
+<!-- Overlay Metrics -->
+<div class="absolute top-md left-md border border-panel-border bg-black/80 p-sm backdrop-blur">
+<div class="font-label-caps text-label-caps text-text-muted mb-xs">LIQUID HE LEVEL</div>
+<div class="font-stat-lg text-lg">82%</div>
+</div>
+<div class="absolute bottom-md right-md border border-panel-border bg-black/80 p-sm backdrop-blur text-right">
+<div class="font-label-caps text-label-caps text-text-muted mb-xs">HEAT LOAD</div>
+<div class="font-stat-lg text-lg">12 µW</div>
+</div>
+</div>
+<!-- Quick Actions / Toggles -->
+<div class="h-24 bg-surface border border-panel-border flex divide-x divide-panel-border">
+<button class="flex-1 flex flex-col items-center justify-center gap-xs hover:bg-surface-variant transition-colors group">
+<span class="material-symbols-outlined text-text-muted group-hover:text-primary">autorenew</span>
+<span class="font-label-caps text-label-caps text-text-muted group-hover:text-primary">CIRCULATION</span>
+</button>
+<button class="flex-1 flex flex-col items-center justify-center gap-xs bg-surface-variant border-b-2 border-primary">
+<span class="material-symbols-outlined text-primary">heat_pump</span>
+<span class="font-label-caps text-label-caps text-primary">COMPRESSOR</span>
+</button>
+<button class="flex-1 flex flex-col items-center justify-center gap-xs hover:bg-surface-variant transition-colors group">
+<span class="material-symbols-outlined text-text-muted group-hover:text-primary">valve</span>
+<span class="font-label-caps text-label-caps text-text-muted group-hover:text-primary">VALVE CTRL</span>
+</button>
+</div>
+</div>
+<!-- Right Column: Pressure Telemetry -->
+<div class="col-span-12 lg:col-span-3 flex flex-col gap-md">
+<div class="bg-surface border border-panel-border p-md flex flex-col relative overflow-hidden group hover:border-surface-variant transition-colors">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-label-caps text-label-caps text-text-muted">P1 OVC</span>
+<div class="w-2 h-2 rounded-full bg-primary pulse-led"></div>
+</div>
+<div class="font-stat-lg text-[2rem] leading-none text-primary mb-md">1.2e-6 <span class="text-sm text-text-muted">mbar</span></div>
+<div class="w-full h-1 bg-panel-border mt-auto">
+<div class="h-full bg-primary w-[15%]"></div>
+</div>
+</div>
+<div class="bg-surface border border-panel-border p-md flex flex-col relative overflow-hidden group hover:border-surface-variant transition-colors">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-label-caps text-label-caps text-text-muted">P2 IVC</span>
+<div class="w-2 h-2 rounded-full bg-primary pulse-led"></div>
+</div>
+<div class="font-stat-lg text-[2rem] leading-none text-primary mb-md">3.4e-5 <span class="text-sm text-text-muted">mbar</span></div>
+<div class="w-full h-1 bg-panel-border mt-auto">
+<div class="h-full bg-primary w-[35%]"></div>
+</div>
+</div>
+<div class="bg-surface border border-panel-border p-md flex flex-col relative overflow-hidden group hover:border-surface-variant transition-colors">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-label-caps text-label-caps text-text-muted">P3 STILL</span>
+<div class="w-2 h-2 rounded-full bg-primary pulse-led"></div>
+</div>
+<div class="font-stat-lg text-[2rem] leading-none text-primary mb-md">1.2e-1 <span class="text-sm text-text-muted">mbar</span></div>
+<div class="w-full h-1 bg-panel-border mt-auto">
+<div class="h-full bg-primary w-[60%]"></div>
+</div>
+</div>
+<!-- Fault Panel Example -->
+<div class="bg-black border border-status-critical p-md flex flex-col relative overflow-hidden">
+<div class="absolute top-0 right-0 p-sm bg-status-critical text-black font-label-caps text-[10px]">SYS_FAULT</div>
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined text-status-critical">warning</span>
+<span class="font-label-caps text-label-caps text-status-critical">FLOW RATE ANOMALY</span>
+</div>
+<div class="font-body-base text-text-muted mb-md">Detected sudden drop in mixture flow rate across condensing line. Check pump P4.</div>
+<button class="w-full border border-panel-border py-sm font-label-caps text-label-caps text-primary hover:bg-surface-variant transition-colors">
+                            ACKNOWLEDGE
+                        </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -18,33 +18,46 @@ def timed_decode(
     Runs decoder.decode() repeatedly on the SAME syndrome set until either
     min_iterations is reached or min_total_ns of wall time has elapsed
     (whichever takes longer), then returns the per-call average.
-    
+
     This exists because a single call on <=161 nodes is usually faster
     than the timer's reliable resolution floor — reported honestly.
-    
+
     Args:
         decoder: Decoder instance with a decode() method
         active_syndromes: List of triggered ancilla qubits
         lattice: The lattice structure
         min_iterations: Minimum number of iterations to run
         min_total_ns: Minimum total wall time in nanoseconds
-    
+
     Returns:
         Dictionary with timing statistics and methodology
     """
+    # Defensive guard: zero iterations requested or empty active syndromes
+    if not active_syndromes or min_iterations <= 0 and min_total_ns <= 0:
+        return {
+            "avg_ns_per_call": 0.0,
+            "iterations": 0,
+            "total_measured_ns": 0,
+            "methodology": "standby — zero iterations requested or empty syndrome list"
+        }
+
     start = time.perf_counter_ns()
     count = 0
-    
+
     while True:
         decoder.decode(active_syndromes, lattice)
         count += 1
         elapsed = time.perf_counter_ns() - start
-        
+
         if count >= min_iterations and elapsed >= min_total_ns:
             break
-    
-    per_call_ns = elapsed / count
-    
+
+    # Clamp to prevent negative floats from clock skew
+    elapsed = max(0, elapsed)
+
+    # Round to 2 decimal places for reliable downstream formatting
+    per_call_ns = round(float(elapsed) / count, 2)
+
     return {
         "avg_ns_per_call": per_call_ns,
         "iterations": count,
@@ -61,18 +74,18 @@ def timed_single_call(
     """
     Time a single function call with nanosecond precision.
     Returns the result and timing info.
-    
+
     Args:
         func: Function to time
         *args, **kwargs: Arguments to pass to the function
-    
+
     Returns:
         Dictionary with result, timing_ns, and methodology
     """
     start = time.perf_counter_ns()
     result = func(*args, **kwargs)
-    elapsed = time.perf_counter_ns() - start
-    
+    elapsed = max(0, time.perf_counter_ns() - start)
+
     return {
         "result": result,
         "timing_ns": elapsed,
@@ -88,24 +101,37 @@ def timed_batch(
 ) -> Dict[str, Any]:
     """
     Time multiple calls to a function and return statistics.
-    
+
     Args:
         func: Function to time
         iterations: Number of iterations
         *args, **kwargs: Arguments to pass to the function
-    
+
     Returns:
         Dictionary with result, timing statistics, and methodology
     """
+    # Defensive guard: zero or negative iterations
+    if iterations <= 0:
+        return {
+            "result": None,
+            "avg_ns_per_call": 0.0,
+            "iterations": 0,
+            "total_measured_ns": 0,
+            "methodology": "standby — zero iterations requested"
+        }
+
     start = time.perf_counter_ns()
     result = None
-    
+
     for _ in range(iterations):
         result = func(*args, **kwargs)
-    
-    elapsed = time.perf_counter_ns() - start
-    per_call_ns = elapsed / iterations
-    
+
+    # Clamp to prevent negative floats from clock skew
+    elapsed = max(0, time.perf_counter_ns() - start)
+
+    # Round to 2 decimal places for reliable JSON serialization
+    per_call_ns = round(elapsed / iterations, 2)
+
     return {
         "result": result,
         "avg_ns_per_call": per_call_ns,
@@ -120,21 +146,21 @@ class TimerFloor:
     Utility to detect when measurements are below the reliable timer floor.
     On most systems, this is around 100-300 nanoseconds.
     """
-    
+
     # Empirically determined measurement floor
     # Below this, we should warn that the measurement may be unreliable
     MEASUREMENT_FLOOR_NS = 100  # nanoseconds
-    
+
     @classmethod
     def is_above_floor(cls, measurement_ns: float) -> bool:
         """Check if a measurement is above the reliable timer floor."""
         return measurement_ns >= cls.MEASUREMENT_FLOOR_NS
-    
+
     @classmethod
     def format_measurement(cls, measurement_ns: float, iterations: int = 1) -> str:
         """
         Format a measurement with appropriate caveats.
-        
+
         If the measurement is below the floor and was a single iteration,
         indicate that it may be unreliable.
         """
@@ -142,16 +168,16 @@ class TimerFloor:
             return f"< {cls.MEASUREMENT_FLOOR_NS} ns (single measurement, below timer floor)"
         else:
             return f"{measurement_ns:.1f} ns (avg over {iterations} iterations)"
-    
+
     @classmethod
     def check_timing_reliability(cls, avg_ns: float, iterations: int) -> Dict[str, Any]:
         """
         Check if a timing measurement is reliable.
-        
+
         Returns a dict with reliability status and any warnings.
         """
         is_reliable = avg_ns >= cls.MEASUREMENT_FLOOR_NS or iterations > 1
-        
+
         warning = None
         if not is_reliable:
             warning = (
@@ -159,7 +185,7 @@ class TimerFloor:
                 f"resolution floor of {cls.MEASUREMENT_FLOOR_NS} ns. "
                 "Consider batching multiple calls for more reliable results."
             )
-        
+
         return {
             "is_reliable": is_reliable,
             "measurement_floor_ns": cls.MEASUREMENT_FLOOR_NS,

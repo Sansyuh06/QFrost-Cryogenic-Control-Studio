@@ -80,26 +80,32 @@ class TestLattice:
         assert validation['all_correct']
     
     def test_data_qubit_positions(self):
-        """Test that data qubits are at correct positions (d x d grid)."""
+        """Test that data qubits are at correct positions on the (2d-1) grid."""
         d = 3
         lattice = build_lattice(d)
+        grid_max = 2 * (d - 1)
         
         for dq in lattice.data_qubits:
-            # Data qubits should be in range 0 to d-1 for both coordinates
-            assert 0 <= dq.r < d, f"Data qubit row out of range: {dq.r}"
-            assert 0 <= dq.c < d, f"Data qubit column out of range: {dq.c}"
+            # Data qubits at even-sum positions in [0, 2(d-1)] range
+            assert 0 <= dq.r <= grid_max, f"Data qubit row out of range: {dq.r}"
+            assert 0 <= dq.c <= grid_max, f"Data qubit column out of range: {dq.c}"
+            assert (dq.r + dq.c) % 2 == 0, f"Data qubit {dq.id} not at even-sum position"
     
     def test_ancilla_positions(self):
-        """Test that ancilla qubits are at correct positions."""
+        """Test that ancilla qubits are at correct integer positions."""
         d = 3
         lattice = build_lattice(d)
+        grid_max = 2 * (d - 1)
         
         for a in lattice.ancillas:
-            # Ancillas should be between data qubits
-            # Row should be in range [0, d-1] or [0.5, d-1.5]
-            # Column should be in range [0, d-1] or [0.5, d-1.5]
-            assert 0 <= a.r <= d - 1 or (isinstance(a.r, float) and 0 <= a.r <= d - 0.5)
-            assert 0 <= a.c <= d - 1 or (isinstance(a.c, float) and 0 <= a.c <= d - 0.5)
+            # Ancillas must have integer coordinates
+            assert isinstance(a.r, int), f"Ancilla {a.id} row is not int: {type(a.r)}"
+            assert isinstance(a.c, int), f"Ancilla {a.id} col is not int: {type(a.c)}"
+            # Coordinates within grid
+            assert 0 <= a.r <= grid_max, f"Ancilla {a.id} row out of range: {a.r}"
+            assert 0 <= a.c <= grid_max, f"Ancilla {a.id} col out of range: {a.c}"
+            # Ancillas at odd-sum positions
+            assert (a.r + a.c) % 2 == 1, f"Ancilla {a.id} not at odd-sum position"
     
     def test_ancilla_types_exist(self):
         """Test that ancillas have valid types."""

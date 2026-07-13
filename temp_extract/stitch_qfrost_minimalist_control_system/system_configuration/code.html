@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QFrost System Configuration</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&amp;family=IBM+Plex+Sans:wght@400;600&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#c8c6c8",
+                        "status-critical": "#EF4444",
+                        "tertiary-fixed": "#e4e1e5",
+                        "inverse-primary": "#5d5f5f",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary-fixed-dim": "#c8c6c8",
+                        "primary-container": "#e2e2e2",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "surface-variant": "#353535",
+                        "surface-container": "#1f1f1f",
+                        "on-tertiary": "#303033",
+                        "on-primary-container": "#636565",
+                        "status-warning": "#FFB800",
+                        "on-primary": "#2f3131",
+                        "text-main": "#FAFAFA",
+                        "surface": "#131313",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#47464a",
+                        "on-tertiary-container": "#656467",
+                        "outline-variant": "#444748",
+                        "error-container": "#93000a",
+                        "text-dim": "#64748B",
+                        "on-secondary-fixed-variant": "#474649",
+                        "primary-fixed": "#e2e2e2",
+                        "inverse-on-surface": "#303030",
+                        "on-primary-fixed": "#1a1c1c",
+                        "on-surface-variant": "#c4c7c8",
+                        "surface-container-highest": "#353535",
+                        "surface-container-lowest": "#0e0e0e",
+                        "panel-border": "#27272A",
+                        "inverse-surface": "#e2e2e2",
+                        "secondary-fixed": "#e5e1e4",
+                        "on-surface": "#e2e2e2",
+                        "surface-bright": "#393939",
+                        "on-primary-fixed-variant": "#454747",
+                        "tertiary-fixed-dim": "#c8c6c9",
+                        "primary": "#ffffff",
+                        "on-secondary-container": "#b7b4b7",
+                        "on-secondary": "#313032",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed": "#1b1b1e",
+                        "surface-container-low": "#1b1b1b",
+                        "on-background": "#e2e2e2",
+                        "surface-tint": "#c6c6c7",
+                        "secondary-container": "#474649",
+                        "tertiary": "#ffffff",
+                        "text-muted": "#A1A1AA",
+                        "background": "#131313",
+                        "outline": "#8e9192",
+                        "on-error": "#690005",
+                        "tertiary-container": "#e4e1e5",
+                        "on-secondary-fixed": "#1c1b1d",
+                        "surface-dim": "#131313"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "24px",
+                        "lg": "24px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "margin-mobile": "16px",
+                        "sm": "8px",
+                        "unit": "4px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Oswald"],
+                        "headline-md": ["IBM Plex Sans"],
+                        "body-base": ["IBM Plex Sans"],
+                        "label-caps": ["JetBrains Mono"],
+                        "stat-lg-mobile": ["JetBrains Mono"],
+                        "stat-lg": ["JetBrains Mono"],
+                        "body-bold": ["IBM Plex Sans"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-base": ["12px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "stat-lg-mobile": ["12px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "600" }],
+                        "stat-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "600" }],
+                        "body-bold": ["12px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .led-pulse { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+        input:focus { border-color: #ffffff; box-shadow: none; outline: none; }
+        input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+</head>
+<body class="bg-background text-text-main font-body-base h-screen overflow-hidden flex selection:bg-surface-bright selection:text-primary">
+<!-- SideNavBar (Shared Component) -->
+<nav class="bg-surface-container-lowest dark:bg-surface-container-lowest text-primary dark:text-primary h-screen w-[320px] shrink-0 border-r border-panel-border flex flex-col h-full py-md px-md">
+<!-- Header -->
+<div class="mb-xl flex items-center gap-md">
+<div class="w-10 h-10 bg-surface border border-panel-border flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</div>
+<div>
+<div class="font-display-lg text-display-lg font-bold tracking-tighter text-primary dark:text-primary uppercase leading-tight">QFROST</div>
+<div class="font-label-caps text-label-caps text-text-dim">CRYOGENIC-01</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex flex-col gap-xs flex-1">
+<a class="flex items-center gap-sm px-sm py-sm text-text-muted dark:text-text-muted hover:text-text-main hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span class="font-label-caps text-label-caps uppercase">Dashboard</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm text-text-muted dark:text-text-muted hover:text-text-main hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">vacuum</span>
+<span class="font-label-caps text-label-caps uppercase">Vacuum Control</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm text-text-muted dark:text-text-muted hover:text-text-main hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">monitoring</span>
+<span class="font-label-caps text-label-caps uppercase">Analytics</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm text-primary dark:text-primary bg-surface-container-highest dark:bg-surface-container-highest border-l-2 border-primary bg-surface-variant transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">settings_input_component</span>
+<span class="font-label-caps text-label-caps uppercase">System Config</span>
+</a>
+</div>
+<!-- Footer Links -->
+<div class="mt-auto flex flex-col gap-xs border-t border-panel-border pt-md">
+<div class="flex justify-between items-center px-sm py-xs">
+<div class="flex items-center gap-sm text-text-muted">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="font-label-caps text-label-caps uppercase">System Health</span>
+</div>
+<div class="w-2 h-2 rounded-full bg-primary led-pulse"></div>
+</div>
+<div class="flex justify-between items-center px-sm py-xs">
+<div class="flex items-center gap-sm text-text-muted">
+<span class="material-symbols-outlined text-[16px]">timer</span>
+<span class="font-label-caps text-label-caps uppercase">Uptime</span>
+</div>
+<span class="font-stat-lg text-stat-lg text-primary">99.9%</span>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col bg-background overflow-y-auto">
+<!-- Header -->
+<header class="h-16 border-b border-panel-border flex items-center px-lg shrink-0 bg-surface">
+<h1 class="font-display-lg text-display-lg uppercase tracking-wide">System Configuration</h1>
+</header>
+<!-- Configuration Grid -->
+<div class="p-lg grid grid-cols-1 xl:grid-cols-2 gap-md max-w-[1440px] mx-auto w-full">
+<!-- Safety Thresholds -->
+<section class="bg-surface-container-low border border-panel-border p-md flex flex-col">
+<div class="flex items-center gap-sm border-b border-panel-border pb-sm mb-sm">
+<span class="material-symbols-outlined text-text-muted">warning</span>
+<h2 class="font-label-caps text-label-caps uppercase text-text-muted">Safety Thresholds</h2>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-text-dim uppercase">Max Pressure (Torr)</label>
+<input class="bg-background border border-panel-border text-main font-stat-lg p-sm w-full transition-colors focus:border-primary" type="number" value="1.5"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-text-dim uppercase">Critical Temp (K)</label>
+<input class="bg-background border border-panel-border text-status-critical font-stat-lg p-sm w-full transition-colors focus:border-primary" type="number" value="4.2"/>
+</div>
+<div class="flex flex-col gap-xs col-span-2">
+<label class="font-label-caps text-label-caps text-text-dim uppercase">Auto-Shutdown Trigger Delay (ms)</label>
+<input class="bg-background border border-panel-border text-main font-stat-lg p-sm w-full transition-colors focus:border-primary" type="number" value="150"/>
+</div>
+</div>
+</section>
+<!-- Sensor Calibration -->
+<section class="bg-surface-container-low border border-panel-border p-md flex flex-col">
+<div class="flex items-center gap-sm border-b border-panel-border pb-sm mb-sm">
+<span class="material-symbols-outlined text-text-muted">tune</span>
+<h2 class="font-label-caps text-label-caps uppercase text-text-muted">Sensor Calibration Coefficients</h2>
+</div>
+<div class="space-y-sm">
+<div class="flex items-center justify-between border-b border-panel-border pb-xs">
+<span class="font-body-base text-text-dim uppercase tracking-wider">PT-100 α</span>
+<input class="bg-background border border-panel-border text-main font-stat-lg px-sm py-xs w-32 text-right transition-colors focus:border-primary" type="text" value="0.00385"/>
+</div>
+<div class="flex items-center justify-between border-b border-panel-border pb-xs">
+<span class="font-body-base text-text-dim uppercase tracking-wider">CX-1050 Base</span>
+<input class="bg-background border border-panel-border text-main font-stat-lg px-sm py-xs w-32 text-right transition-colors focus:border-primary" type="text" value="1.002"/>
+</div>
+<div class="flex items-center justify-between border-b border-panel-border pb-xs">
+<span class="font-body-base text-text-dim uppercase tracking-wider">Offset T (K)</span>
+<input class="bg-background border border-panel-border text-main font-stat-lg px-sm py-xs w-32 text-right transition-colors focus:border-primary" type="text" value="-0.015"/>
+</div>
+</div>
+</section>
+<!-- Network / MQTT Config -->
+<section class="bg-surface-container-low border border-panel-border p-md flex flex-col">
+<div class="flex items-center gap-sm border-b border-panel-border pb-sm mb-sm">
+<span class="material-symbols-outlined text-text-muted">router</span>
+<h2 class="font-label-caps text-label-caps uppercase text-text-muted">Network &amp; MQTT Control</h2>
+</div>
+<div class="space-y-sm">
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-text-dim uppercase">Broker URI</label>
+<input class="bg-background border border-panel-border text-main font-stat-lg p-sm w-full transition-colors focus:border-primary" type="text" value="mqtt://broker.qfrost.local:1883"/>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-text-dim uppercase">Client ID</label>
+<input class="bg-background border border-panel-border text-main font-stat-lg p-sm w-full transition-colors focus:border-primary" type="text" value="QF-NODE-01"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-text-dim uppercase">QoS Level</label>
+<div class="flex bg-background border border-panel-border p-[1px]">
+<button class="flex-1 bg-surface-variant text-main font-label-caps py-xs">0</button>
+<button class="flex-1 bg-primary text-on-primary font-label-caps py-xs">1</button>
+<button class="flex-1 bg-surface-variant text-main font-label-caps py-xs">2</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Diagnostic Section -->
+<section class="bg-surface-container-low border border-panel-border p-md flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between border-b border-panel-border pb-sm mb-sm">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-text-muted">health_and_safety</span>
+<h2 class="font-label-caps text-label-caps uppercase text-text-muted">System Health Diagnostics</h2>
+</div>
+<div class="w-2 h-2 rounded-full bg-primary led-pulse"></div>
+</div>
+<div class="grid grid-cols-2 gap-y-sm gap-x-md mb-md">
+<div class="flex justify-between items-center border-b border-panel-border pb-xs">
+<span class="font-label-caps text-label-caps text-text-dim uppercase">Comm Bus</span>
+<span class="font-stat-lg text-stat-lg text-primary">OK</span>
+</div>
+<div class="flex justify-between items-center border-b border-panel-border pb-xs">
+<span class="font-label-caps text-label-caps text-text-dim uppercase">Sensor Array</span>
+<span class="font-stat-lg text-stat-lg text-primary">OK</span>
+</div>
+<div class="flex justify-between items-center border-b border-panel-border pb-xs">
+<span class="font-label-caps text-label-caps text-text-dim uppercase">Valve Interlock</span>
+<span class="font-stat-lg text-stat-lg text-status-warning">WARN</span>
+</div>
+<div class="flex justify-between items-center border-b border-panel-border pb-xs">
+<span class="font-label-caps text-label-caps text-text-dim uppercase">Last Sync</span>
+<span class="font-stat-lg text-stat-lg text-primary">12ms ago</span>
+</div>
+</div>
+</div>
+<button class="w-full bg-transparent border border-panel-border hover:border-surface-variant hover:bg-surface-variant text-main font-label-caps py-sm uppercase tracking-widest transition-all">
+                    Run Full Self-Test
+                </button>
+</section>
+<!-- Action Bar -->
+<div class="col-span-1 xl:col-span-2 flex justify-end gap-sm mt-sm border-t border-panel-border pt-md">
+<button class="bg-transparent border border-panel-border text-main font-label-caps px-xl py-sm uppercase tracking-wider hover:bg-surface-variant transition-colors">
+                    Revert
+                </button>
+<button class="bg-primary text-on-primary font-label-caps px-xl py-sm uppercase tracking-wider hover:bg-surface-container-high hover:text-primary transition-colors">
+                    Apply Configuration
+                </button>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quantum Orchestrator - QFROST</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&amp;family=JetBrains+Mono:wght@600&amp;family=Oswald:wght@700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#454747",
+                        "on-primary-fixed": "#1a1c1c",
+                        "surface-container-low": "#1b1b1b",
+                        "on-tertiary-fixed-variant": "#47464a",
+                        "on-error": "#690005",
+                        "inverse-on-surface": "#303030",
+                        "secondary": "#c8c6c8",
+                        "surface-bright": "#393939",
+                        "surface-tint": "#c6c6c7",
+                        "inverse-primary": "#5d5f5f",
+                        "background": "#131313",
+                        "panel-border": "#27272A",
+                        "on-secondary-container": "#b7b4b7",
+                        "status-warning": "#FFB800",
+                        "on-tertiary-container": "#656467",
+                        "tertiary-fixed": "#e4e1e5",
+                        "outline": "#8e9192",
+                        "on-secondary": "#313032",
+                        "tertiary": "#ffffff",
+                        "outline-variant": "#444748",
+                        "error-container": "#93000a",
+                        "surface-variant": "#353535",
+                        "on-secondary-fixed-variant": "#474649",
+                        "on-secondary-fixed": "#1c1b1d",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed": "#e2e2e2",
+                        "on-surface": "#e2e2e2",
+                        "secondary-fixed-dim": "#c8c6c8",
+                        "primary": "#ffffff",
+                        "on-surface-variant": "#c4c7c8",
+                        "on-primary-container": "#636565",
+                        "on-tertiary": "#303033",
+                        "text-muted": "#A1A1AA",
+                        "secondary-fixed": "#e5e1e4",
+                        "on-background": "#e2e2e2",
+                        "tertiary-fixed-dim": "#c8c6c9",
+                        "text-main": "#FAFAFA",
+                        "surface-container-high": "#2a2a2a",
+                        "secondary-container": "#474649",
+                        "on-tertiary-fixed": "#1b1b1e",
+                        "on-primary": "#2f3131",
+                        "inverse-surface": "#e2e2e2",
+                        "primary-container": "#e2e2e2",
+                        "surface-container-lowest": "#0e0e0e",
+                        "surface-container-highest": "#353535",
+                        "surface": "#131313",
+                        "status-critical": "#EF4444",
+                        "text-dim": "#64748B",
+                        "surface-container": "#1f1f1f",
+                        "error": "#ffb4ab",
+                        "surface-dim": "#131313",
+                        "tertiary-container": "#e4e1e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "margin-mobile": "16px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "margin-desktop": "24px"
+                    },
+                    "fontFamily": {
+                        "body-bold": ["IBM Plex Sans"],
+                        "stat-lg": ["JetBrains Mono"],
+                        "label-caps": ["JetBrains Mono"],
+                        "stat-lg-mobile": ["JetBrains Mono"],
+                        "headline-md": ["IBM Plex Sans"],
+                        "display-lg": ["Oswald"],
+                        "body-base": ["IBM Plex Sans"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    "fontSize": {
+                        "body-bold": ["12px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "600" }],
+                        "stat-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "600" }],
+                        "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "stat-lg-mobile": ["12px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "600" }],
+                        "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-base": ["12px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .pulse-glow {
+            animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(255,255,255,0.2); }
+            50% { opacity: .8; box-shadow: 0 0 20px rgba(255,255,255,0.6); }
+        }
+        .gate-box {
+            position: relative;
+        }
+        .gate-box::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -24px;
+            width: 24px;
+            height: 1px;
+            background-color: #27272A;
+            z-index: 0;
+        }
+        .gate-box:last-child::after {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-base antialiased h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<aside class="bg-surface-container-lowest dark:bg-surface-container-lowest text-primary dark:text-primary h-screen w-[320px] shrink-0 border-r border-panel-border flex flex-col py-md px-md z-20">
+<!-- Brand/Header -->
+<div class="mb-xl">
+<h1 class="font-display-lg text-display-lg font-bold tracking-tighter text-primary dark:text-primary">QFROST</h1>
+<p class="font-label-caps text-label-caps text-text-muted mt-xs">CRYOGENIC-01</p>
+</div>
+<!-- Navigation -->
+<nav class="flex-1 space-y-sm">
+<a class="flex items-center gap-md px-sm py-sm text-text-muted dark:text-text-muted hover:text-text-main hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150 rounded" href="#">
+<span aria-hidden="true" class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-body-bold text-body-bold">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm text-text-muted dark:text-text-muted hover:text-text-main hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150 rounded" href="#">
+<span aria-hidden="true" class="material-symbols-outlined text-[20px]">vacuum</span>
+<span class="font-body-bold text-body-bold">Vacuum Control</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm text-primary dark:text-primary bg-surface-container-highest dark:bg-surface-container-highest border-l-2 border-primary rounded-r" href="#">
+<span aria-hidden="true" class="material-symbols-outlined text-[20px]">monitoring</span>
+<span class="font-body-bold text-body-bold">Analytics</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm text-text-muted dark:text-text-muted hover:text-text-main hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150 rounded" href="#">
+<span aria-hidden="true" class="material-symbols-outlined text-[20px]">settings_input_component</span>
+<span class="font-body-bold text-body-bold">System Config</span>
+</a>
+</nav>
+<!-- Footer -->
+<div class="mt-auto border-t border-panel-border pt-md space-y-sm">
+<a class="flex items-center gap-md px-sm py-sm text-text-muted hover:text-text-main hover:bg-surface-container transition-colors duration-150 rounded" href="#">
+<span aria-hidden="true" class="material-symbols-outlined text-[20px]">check_circle</span>
+<span class="font-body-bold text-body-bold">System Health</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm text-text-muted hover:text-text-main hover:bg-surface-container transition-colors duration-150 rounded" href="#">
+<span aria-hidden="true" class="material-symbols-outlined text-[20px]">timer</span>
+<span class="font-body-bold text-body-bold">Uptime</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface text-primary dark:text-primary w-full h-12 flex justify-between items-center px-lg border-b border-panel-border shrink-0 z-20">
+<div class="flex items-center">
+<span class="font-label-caps text-label-caps tracking-[0.2em] text-primary dark:text-primary">QFROST // ABSOLUTE ZERO</span>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-text-dim hover:text-primary transition-colors active:scale-95 active:opacity-80">
+<span aria-hidden="true" class="material-symbols-outlined">notifications_active</span>
+</button>
+<button class="text-text-dim hover:text-primary transition-colors active:scale-95 active:opacity-80">
+<span aria-hidden="true" class="material-symbols-outlined">emergency_home</span>
+</button>
+<button class="text-text-dim hover:text-primary transition-colors active:scale-95 active:opacity-80">
+<span aria-hidden="true" class="material-symbols-outlined">power_settings_new</span>
+</button>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="flex-1 overflow-y-auto p-lg flex flex-col gap-lg bg-background">
+<!-- Header -->
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Quantum Orchestrator</h2>
+</div>
+<!-- Top Section: Quantum Code Book Upload -->
+<section class="bg-surface-container-lowest border border-panel-border p-md flex flex-col gap-md">
+<h3 class="font-label-caps text-label-caps text-text-muted uppercase">Quantum Code Book Upload</h3>
+<div class="border border-dashed border-panel-border bg-surface-container-low p-xl flex flex-col items-center justify-center text-center gap-sm cursor-pointer hover:bg-surface-variant transition-colors group">
+<span aria-hidden="true" class="material-symbols-outlined text-text-muted group-hover:text-primary text-[32px] transition-colors">upload_file</span>
+<p class="font-body-base text-body-base text-text-muted">Drag and drop QASM or Python scripts here</p>
+<p class="font-label-caps text-label-caps text-text-dim">.qasm, .py files supported</p>
+</div>
+<div class="flex justify-end mt-sm">
+<button class="bg-primary text-on-primary px-lg py-sm font-body-bold text-body-bold hover:bg-surface-tint transition-colors flex items-center gap-xs">
+<span aria-hidden="true" class="material-symbols-outlined text-[16px]">transform</span>
+                        Convert to Gates
+                    </button>
+</div>
+</section>
+<!-- Middle Section: Gate-to-Circuit Workflow -->
+<section class="bg-surface-container-lowest border border-panel-border p-md flex flex-col gap-md">
+<h3 class="font-label-caps text-label-caps text-text-muted uppercase">Gate-to-Circuit Workflow</h3>
+<div class="bg-surface-container-low border border-panel-border p-md overflow-x-auto">
+<div class="flex items-center gap-lg min-w-max pb-sm">
+<!-- Code Block -->
+<div class="bg-background border border-panel-border p-sm font-mono text-xs text-text-muted w-48 shrink-0">
+<code>qc.h(0)<br/>qc.cx(0, 1)<br/>qc.measure_all()</code>
+</div>
+<span aria-hidden="true" class="material-symbols-outlined text-panel-border">arrow_forward</span>
+<!-- Gates Flow -->
+<div class="flex items-center gap-xl shrink-0 relative">
+<!-- Horizontal wire line behind gates -->
+<div class="absolute top-1/2 left-0 right-0 h-px bg-panel-border -z-10"></div>
+<div class="gate-box bg-surface border border-panel-border w-12 h-12 flex items-center justify-center z-10 relative bg-background">
+<span class="font-mono text-sm text-primary font-bold">H</span>
+</div>
+<div class="gate-box bg-surface border border-panel-border w-12 h-12 flex items-center justify-center z-10 relative bg-background">
+<span class="font-mono text-sm text-primary font-bold">CX</span>
+</div>
+<div class="gate-box bg-surface border border-panel-border w-12 h-12 flex items-center justify-center z-10 relative bg-background">
+<span aria-hidden="true" class="material-symbols-outlined text-[18px] text-primary">speed</span>
+</div>
+</div>
+<span aria-hidden="true" class="material-symbols-outlined text-panel-border">arrow_forward</span>
+<!-- Circuit Diagram (Abstracted) -->
+<div class="bg-background border border-panel-border p-sm flex flex-col gap-sm shrink-0 w-64">
+<div class="flex items-center gap-sm">
+<span class="font-mono text-xs text-text-dim w-6">q0</span>
+<div class="flex-1 h-px bg-panel-border relative">
+<div class="absolute top-1/2 left-4 -translate-y-1/2 w-6 h-6 bg-surface border border-panel-border flex items-center justify-center font-mono text-[10px] text-primary">H</div>
+<div class="absolute top-1/2 left-16 -translate-y-1/2 w-2 h-2 rounded-full bg-primary"></div>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-mono text-xs text-text-dim w-6">q1</span>
+<div class="flex-1 h-px bg-panel-border relative">
+<div class="absolute top-1/2 left-16 -translate-y-1/2 w-4 h-4 rounded-full border border-primary flex items-center justify-center bg-background">
+<div class="w-px h-full bg-primary"></div>
+<div class="h-px w-full bg-primary absolute"></div>
+</div>
+<!-- CNOT Vertical connection -->
+<div class="absolute bottom-1/2 left-16 w-px h-8 bg-primary z-0"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Section: Real-Time State Analysis Hero -->
+<section class="relative bg-surface-container-lowest border border-panel-border h-80 overflow-hidden flex flex-col isolate">
+<!-- Shader Background -->
+<!-- STITCH_SHADER_START:ANIMATION_7 class="absolute inset-0 w-full h-full -z-10 opacity-60" -->
+<div class="absolute inset-0 w-full h-full -z-10 opacity-60" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_7" style="display:block;width:100%;height:100%"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_7');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+varying vec2 v_texCoord;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
+               mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+}
+
+void main() {
+    vec2 uv = v_texCoord;
+    vec2 centered_uv = (uv - 0.5) * 2.0;
+    centered_uv.x *= u_resolution.x / u_resolution.y;
+
+    // Quantum field base
+    float n = noise(uv * 4.0 + u_time * 0.2);
+    vec3 color = vec3(0.05, 0.05, 0.07); // Dark surface
+    
+    // Grid lines
+    vec2 grid = fract(uv * 20.0 - u_time * 0.1);
+    float line = smoothstep(0.02, 0.0, grid.x) + smoothstep(0.02, 0.0, grid.y);
+    color += line * 0.05;
+
+    // "Error" pulses (Red spikes)
+    float error_pulse = sin(u_time * 3.0 + uv.x * 10.0) * noise(uv * 10.0 + u_time);
+    if (error_pulse > 0.8) {
+        color += vec3(0.8, 0.1, 0.1) * smoothstep(0.8, 1.0, error_pulse) * 0.5;
+    }
+
+    // "Resolution" waves (Cyan/White ripples)
+    float res_wave = sin(length(centered_uv) * 15.0 - u_time * 5.0);
+    float res_mask = smoothstep(0.4, 0.45, noise(uv * 5.0 + u_time));
+    color += vec3(0.0, 0.8, 1.0) * (1.0 - smoothstep(0.0, 0.1, abs(res_wave))) * res_mask * 0.3;
+
+    // Glowing data nodes
+    vec2 node_pos = floor(uv * 10.0) / 10.0 + 0.05;
+    float node_active = step(0.9, hash(node_pos + floor(u_time * 2.0)));
+    float dist = length(uv - node_pos);
+    color += vec3(0.1, 0.6, 1.0) * smoothstep(0.02, 0.0, dist) * node_active;
+
+    gl_FragColor = vec4(color, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_7 -->
+<div class="p-md flex justify-between items-start z-10 bg-gradient-to-b from-background/80 to-transparent">
+<h3 class="font-label-caps text-label-caps text-text-main uppercase">Real-Time State Analysis</h3>
+<div class="flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="font-label-caps text-label-caps text-primary">Live Sync</span>
+</div>
+</div>
+<!-- Overlay Panel -->
+<div class="mt-auto p-md z-10">
+<div class="bg-background/90 backdrop-blur-sm border border-panel-border p-md flex items-center justify-between">
+<div class="flex gap-xl">
+<div class="flex flex-col gap-xs">
+<span class="font-label-caps text-label-caps text-text-muted">Error Rate</span>
+<span class="font-stat-lg text-stat-lg text-primary">0.002%</span>
+</div>
+<div class="w-px h-auto bg-panel-border"></div>
+<div class="flex flex-col gap-xs">
+<span class="font-label-caps text-label-caps text-text-muted">Resolution</span>
+<span class="font-stat-lg text-stat-lg text-primary">Active</span>
+</div>
+<div class="w-px h-auto bg-panel-border"></div>
+<div class="flex flex-col gap-xs">
+<span class="font-label-caps text-label-caps text-text-muted">State Fidelity</span>
+<span class="font-stat-lg text-stat-lg text-primary">99.98%</span>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-xl py-sm font-body-bold text-body-bold pulse-glow transition-all">
+                            Run Orchestration
+                        </button>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>
