@@ -29,6 +29,11 @@ from decoders.greedy_mwpm import GreedyMWPMDecoder, serialize_correction as seri
 from circuits.qiskit_stabilizers import run_stabilizer_round, serialize_syndrome_result
 from circuits.cirq_stabilizers import cross_validate_syndromes, check_cirq_available
 from circuits.pennylane_sensitivity import run_sensitivity_analysis, check_pennylane_available
+from ast_parser import parse_qiskit_code
+from pydantic import BaseModel
+
+class ASTRequest(BaseModel):
+    code: str
 
 # Create FastAPI app
 app = FastAPI(
@@ -320,6 +325,21 @@ async def api_reaction_budget(request: ReactionBudgetRequest):
         status=status,
         methodology=methodology
     )
+
+
+@app.post("/api/parse-ast")
+async def api_parse_ast(request: ASTRequest):
+    """
+    Parse Qiskit Python AST and return the qubit count and applied gates.
+    """
+    try:
+        result = parse_qiskit_code(request.code)
+        if "error" in result:
+            raise HTTPException(status_code=400, detail=result["error"])
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @app.exception_handler(ValidationError)

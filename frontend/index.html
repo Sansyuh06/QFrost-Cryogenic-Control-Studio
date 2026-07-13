@@ -7,6 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -283,7 +285,59 @@
                     </div>
                 </div>
             </section>
+            <!-- RACK MODULE C - DECODER ARENA -->
+            <section class="rack-module arena-module" aria-label="Decoder Arena">
+                <div class="rack-screws">
+                    <span class="screw"></span>
+                    <span class="screw"></span>
+                    <span class="screw"></span>
+                    <span class="screw"></span>
+                </div>
+                
+                <div class="rack-label">RACK MODULE C — DECODER ARENA</div>
+                <p class="panel-note">Write or paste your custom JavaScript decoder. Output is independently verified.</p>
+                
+                <div class="arena-content">
+                    <div class="editor-container">
+                        <textarea id="decoder-editor"></textarea>
+                    </div>
+                    
+                    <div class="arena-controls">
+                        <button id="submit-decoder-btn" class="primary-btn">
+                            <span class="btn-label">SUBMIT DECODER</span>
+                            <span class="btn-icon">⚡</span>
+                        </button>
+                        <div class="submission-status">
+                            <div class="status-led" id="arena-status-led"></div>
+                            <span id="arena-status-text">READY</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rack-divider"></div>
+                
+                <div class="rack-label rack-label-small">LEADERBOARD</div>
+                <div class="leaderboard-container">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>DECODER</th>
+                                <th>TIME (AVG)</th>
+                                <th>ITERATIONS</th>
+                                <th>STATUS</th>
+                                <th>DIST</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </main>
+
+        <!-- Hidden sandbox iframe for executing untrusted decoder JS -->
+        <iframe id="decoder-sandbox" sandbox="allow-scripts" style="display:none"></iframe>
 
         <!-- FOOTER -->
         <footer class="instrument-footer">
@@ -293,6 +347,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

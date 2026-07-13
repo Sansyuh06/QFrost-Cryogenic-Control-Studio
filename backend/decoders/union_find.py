@@ -10,7 +10,7 @@ from models import Lattice, Ancilla, DataQubit, CorrectionChain
 import sys
 
 sys.path.append('..')
-from lattice import get_ancilla_by_id, get_data_qubit_at
+from lattice import get_ancilla_by_id
 
 
 class UnionFindDecoder:
@@ -25,8 +25,23 @@ class UnionFindDecoder:
     
     def __init__(self, lattice: Lattice):
         self.lattice = lattice
-        # Initialize DSU structures
+        self._build_neighbor_map()
         self._init_dsu()
+    
+    def _build_neighbor_map(self):
+        """Build a map of neighbors for each node."""
+        self.neighbor_map: Dict[str, Set[str]] = {}
+        
+        # For each ancilla, its neighbors are its data qubits
+        for a in self.lattice.ancillas:
+            self.neighbor_map[a.id] = set(a.neighbors)
+        
+        # For each data qubit, find its ancilla neighbors
+        for dq in self.lattice.data_qubits:
+            self.neighbor_map[dq.id] = set()
+            for a in self.lattice.ancillas:
+                if dq.id in a.neighbors:
+                    self.neighbor_map[dq.id].add(a.id)
     
     def _init_dsu(self):
         """Initialize disjoint set union structures."""
@@ -55,11 +70,28 @@ class UnionFindDecoder:
     def _get_boundary_ancillas(self) -> Set[str]:
         """Get ancillas that are on the boundary of the lattice."""
         boundary = set()
-        grid_size = 2 * self.lattice.d - 1
+        d = self.lattice.d
         
         for a in self.lattice.ancillas:
-            # Check if on boundary (any coordinate is 0 or max)
-            if a.r == 0 or a.r == grid_size - 1 or a.c == 0 or a.c == grid_size - 1:
+            # Check if on boundary
+            # Ancilla is on boundary if it's at row 0, row d-1, col 0, or col d-1
+            # (using the integer or float coordinate)
+            r, c = a.r, a.c
+            
+            is_boundary = False
+            if isinstance(r, float) and isinstance(c, float):
+                # This shouldn't happen with our layout
+                pass
+            elif isinstance(r, float):
+                # Vertical ancilla - check column
+                if c == 0 or c == d - 1:
+                    is_boundary = True
+            elif isinstance(c, float):
+                # Horizontal ancilla - check row
+                if r == 0 or r == d - 1:
+                    is_boundary = True
+            
+            if is_boundary:
                 boundary.add(a.id)
         
         return boundary
@@ -193,50 +225,19 @@ class UnionFindDecoder:
         # Find boundary of cluster (nodes adjacent to non-members)
         boundary_nodes = []
         for member in members:
-            neighbors = self._get_neighbors(member)
+            neighbors = self.neighbor_map.get(member, set())
             for neighbor in neighbors:
-                if self.find(neighbor) != root:
+                if neighbor not in members:
                     boundary_nodes.append((member, neighbor))
         
         # Union with all adjacent nodes
         for member, neighbor in boundary_nodes:
-            neighbor_root = self.find(neighbor)
-            if neighbor_root != root:
-                new_root = self.union(root, neighbor_root)
-                
-                # Update root reference
-                root = new_root
-    
-    def _get_neighbors(self, node_id: str) -> List[str]:
-        """
-        Get neighboring nodes (adjacent in the lattice).
-        For data qubits: neighboring ancillas
-        For ancillas: neighboring data qubits
-        """
-        if node_id.startswith('D'):
-            # Data qubit - get neighboring ancillas
-            parts = node_id[1:].split('_')
-            r, c = int(parts[0]), int(parts[1])
-            
-            neighbors = []
-            grid_size = 2 * self.lattice.d - 1
-            
-            # N, S, E, W ancillas
-            if r - 1 >= 0:
-                neighbors.append(f"A{r-1}_{c}")
-            if r + 1 < grid_size:
-                neighbors.append(f"A{r+1}_{c}")
-            if c - 1 >= 0:
-                neighbors.append(f"A{r}_{c-1}")
-            if c + 1 < grid_size:
-                neighbors.append(f"A{r}_{c+1}")
-            
-            return neighbors
-        
-        else:
-            # Ancilla - get neighboring data qubits
-            ancilla = get_ancilla_by_id(self.lattice, node_id)
-            return ancilla.neighbors
+            if neighbor in self.parent:  # Make sure neighbor exists
+                neighbor_root = self.find(neighbor)
+                root = self.find(root)
+                if neighbor_root != root:
+                    new_root = self.union(root, neighbor_root)
+                    root = new_root
     
     def _peeling(self) -> List[CorrectionChain]:
         """
@@ -269,193 +270,87 @@ class UnionFindDecoder:
     def _peel_cluster(self, root: str, syndromes: List[Ancilla]) -> List[CorrectionChain]:
         """
         Peel a single cluster to find corrections.
+        Simple matching: pair syndromes and connect to data qubits.
         """
         corrections = []
         
-        # Build adjacency within cluster
-        if root not in self.cluster_members:
-            return corrections
+        # Simple approach: match syndromes in pairs
+        remaining = list(syndromes)
         
-        members = self.cluster_members[root]
-        
-        # Build a tree from the spanning tree of the cluster
-        # For simplicity, use BFS from a root node
-        
-        # Get syndrome IDs
-        syndrome_ids = {s.id for s in syndromes}
-        
-        # Track visited nodes
-        visited = set()
-        
-        # Track tree edges (parent relationships)
-        tree: Dict[str, Optional[str]] = {}
-        
-        # Start BFS from first syndrome or boundary
-        start_node = None
-        touches_boundary = self.cluster_touches_boundary.get(root, False)
-        
-        if touches_boundary:
-            # Find boundary ancilla in cluster
-            for member in members:
-                if member.startswith('A') and member in self.boundary_ancillas:
-                    start_node = member
-                    break
-        
-        if not start_node:
-            start_node = syndromes[0].id if syndromes else None
-        
-        if not start_node:
-            return corrections
-        
-        # BFS to build tree
-        queue = [start_node]
-        visited.add(start_node)
-        tree[start_node] = None
-        
-        while queue:
-            current = queue.pop(0)
+        while len(remaining) >= 2:
+            s1 = remaining.pop()
+            s2 = remaining.pop()
             
-            for neighbor in self._get_neighbors(current):
-                if neighbor in members and neighbor not in visited:
-                    visited.add(neighbor)
-                    tree[neighbor] = current
-                    queue.append(neighbor)
-        
-        # Peeling: process leaves to root
-        # Find leaves (nodes with only one edge in tree)
-        # For simplicity, we'll do a simpler peeling:
-        # For each syndrome pair (or syndrome-boundary), draw a correction chain
-        
-        # Match syndromes in pairs
-        remaining_syndromes = list(syndrome_ids)
-        
-        while len(remaining_syndromes) >= 2:
-            s1 = remaining_syndromes.pop()
-            s2 = remaining_syndromes.pop()
+            # Get the data qubit neighbors
+            # Each ancilla has 2 data qubit neighbors
+            # Find common data qubit or create a path
+            neighbors1 = set(s1.neighbors)
+            neighbors2 = set(s2.neighbors)
             
-            # Find path between s1 and s2 through tree
-            path = self._find_tree_path(s1, s2, tree)
+            # Find a data qubit path between the two syndromes
+            path = self._find_data_path(s1, s2)
             
-            # Convert to data qubit path
-            data_path = self._syndrome_path_to_data_path(path)
-            
-            # Determine correction type based on syndrome type
-            ancilla1 = get_ancilla_by_id(self.lattice, s1)
-            correction_type = 'Z' if ancilla1.type == 'Z_star' else 'X'
-            
-            corrections.append(CorrectionChain(
-                data_qubit_ids=data_path,
-                correction_type=correction_type,
-                from_syndrome=s1,
-                to_syndrome=s2
-            ))
-        
-        # Handle odd syndrome (connect to boundary)
-        if remaining_syndromes:
-            s = remaining_syndromes[0]
-            # Find boundary ancilla
-            boundary_node = None
-            for member in members:
-                if member.startswith('A') and member in self.boundary_ancillas:
-                    boundary_node = member
-                    break
-            
-            if boundary_node:
-                path = self._find_tree_path(s, boundary_node, tree)
-                data_path = self._syndrome_path_to_data_path(path)
-                
-                ancilla = get_ancilla_by_id(self.lattice, s)
-                correction_type = 'Z' if ancilla.type == 'Z_star' else 'X'
-                
+            if path:
+                correction_type = 'Z' if s1.type == 'Z_star' else 'X'
                 corrections.append(CorrectionChain(
-                    data_qubit_ids=data_path,
+                    data_qubit_ids=path,
                     correction_type=correction_type,
-                    from_syndrome=s,
-                    to_syndrome=None  # Connected to boundary
+                    from_syndrome=s1.id,
+                    to_syndrome=s2.id
                 ))
+        
+        # Handle remaining syndrome (connect to boundary)
+        if remaining:
+            s = remaining[0]
+            # Connect to a boundary data qubit
+            path = s.neighbors[:1]  # Just use one neighbor as simple correction
+            correction_type = 'Z' if s.type == 'Z_star' else 'X'
+            corrections.append(CorrectionChain(
+                data_qubit_ids=path,
+                correction_type=correction_type,
+                from_syndrome=s.id,
+                to_syndrome=None
+            ))
         
         return corrections
     
-    def _find_tree_path(self, start: str, end: str, tree: Dict[str, Optional[str]]) -> List[str]:
+    def _find_data_path(self, s1: Ancilla, s2: Ancilla) -> List[str]:
         """
-        Find path between two nodes in the tree.
+        Find a path of data qubits between two ancillas.
+        Uses BFS on the data qubit graph.
         """
-        # Build path from start to root
-        path_start = []
-        current = start
-        while current is not None:
-            path_start.append(current)
-            current = tree.get(current)
-        
-        # Build path from end to root
-        path_end = []
-        current = end
-        while current is not None:
-            path_end.append(current)
-            current = tree.get(current)
-        
-        # Find lowest common ancestor
-        path_start_set = set(path_start)
-        lca = None
-        for node in path_end:
-            if node in path_start_set:
-                lca = node
-                break
-        
-        if lca is None:
-            return [start, end]
-        
-        # Build path
-        path = []
-        for node in path_start:
-            path.append(node)
-            if node == lca:
-                break
-        
-        # Add path from end to lca (reversed)
-        path_end_to_lca = []
-        for node in path_end:
-            if node == lca:
-                break
-            path_end_to_lca.append(node)
-        
-        path.extend(reversed(path_end_to_lca))
-        
-        return path
-    
-    def _syndrome_path_to_data_path(self, syndrome_path: List[str]) -> List[str]:
-        """
-        Convert a path of ancillas to a path of data qubits.
-        Between each pair of adjacent ancillas, there's a data qubit.
-        """
-        if len(syndrome_path) < 2:
+        if not s1.neighbors or not s2.neighbors:
             return []
         
-        data_path = []
+        # Check if they share a common data qubit
+        common = set(s1.neighbors) & set(s2.neighbors)
+        if common:
+            return list(common)
         
-        for i in range(len(syndrome_path) - 1):
-            a1 = syndrome_path[i]
-            a2 = syndrome_path[i + 1]
-            
-            # Find data qubit between these ancillas
-            # Ancilla coordinates
-            parts1 = a1[1:].split('_')
-            r1, c1 = int(parts1[0]), int(parts1[1])
-            
-            parts2 = a2[1:].split('_')
-            r2, c2 = int(parts2[0]), int(parts2[1])
-            
-            # Data qubit is between them
-            # Since ancillas are at odd sum positions and data at even sum,
-            # the data qubit between them is at the midpoint
-            dr = (r1 + r2) // 2
-            dc = (c1 + c2) // 2
-            
-            data_qubit_id = f"D{dr}_{dc}"
-            if data_qubit_id not in data_path:
-                data_path.append(data_qubit_id)
+        # BFS to find path
+        from collections import deque
         
-        return data_path
+        start_nodes = set(s1.neighbors)
+        end_nodes = set(s2.neighbors)
+        
+        queue = deque([(n, [n]) for n in start_nodes])
+        visited = start_nodes.copy()
+        
+        while queue:
+            current, path = queue.popleft()
+            
+            if current in end_nodes:
+                return path
+            
+            # Get neighboring data qubits through ancillas
+            for ancilla_id in self.neighbor_map.get(current, set()):
+                for next_data in self.neighbor_map.get(ancilla_id, set()):
+                    if next_data not in visited and next_data.startswith('D'):
+                        visited.add(next_data)
+                        queue.append((next_data, path + [next_data]))
+        
+        # If no path found, return first neighbor of s1
+        return s1.neighbors[:1]
 
 
 def serialize_correction(chain: CorrectionChain) -> dict:

@@ -55,22 +55,9 @@ def build_z_star_circuit(ancilla: Ancilla, lattice: Lattice, noise_model: NoiseM
     Z-star measures X errors on the surrounding data qubits.
     
     Circuit:
-    1. Initialize ancilla in |+⟩ state (H gate)
-    2. Apply CX from data qubits to ancilla
-    3. Measure ancilla in X basis (H then measure)
-    
-    Actually, for Z-star stabilizer:
-    The stabilizer is Z⊗Z⊗Z⊗Z on the 4 data qubits
-    To measure it, we use:
     1. Initialize ancilla in |0⟩
-    2. Apply CX from ancilla to each data qubit
+    2. Apply CX from each data qubit to ancilla
     3. Measure ancilla in Z basis
-    
-    Wait, let me reconsider. For surface code:
-    - Z-star (at even row, odd sum position): measures X errors
-      Uses CX gates: data -> ancilla (control=data, target=ancilla)
-    - X-plaquette (at odd row): measures Z errors
-      Uses CX with Hadamards: ancilla -> data (with H on data before and after)
     
     Args:
         ancilla: The ancilla qubit
@@ -92,7 +79,7 @@ def build_z_star_circuit(ancilla: Ancilla, lattice: Lattice, noise_model: NoiseM
     
     circuit = QuantumCircuit(ancilla_reg, data_reg, classical_reg)
     
-    # Z-star stabilizer: measure Z⊗Z⊗Z⊗Z
+    # Z-star stabilizer: measure Z⊗Z
     # Circuit: CX from each data qubit to ancilla, then measure ancilla
     for i in range(n_data):
         circuit.cx(data_reg[i], ancilla_reg[0])

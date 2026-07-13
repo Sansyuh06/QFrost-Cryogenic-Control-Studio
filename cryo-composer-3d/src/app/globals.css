@@ -1,0 +1,167 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-void: #000000;
+  --color-panel-bg: #09090b; /* zinc-950 */
+  --color-panel-border: #27272a; /* zinc-800 */
+  --color-accent-main: #ffffff;
+  --color-accent-secondary: #f4f4f5; /* zinc-100 */
+  --color-status-good: #ffffff;
+  --color-status-bad: #ef4444; /* Keep red for destructive, but muted */
+  --color-text-main: #fafafa; /* zinc-50 */
+  --color-text-muted: #a1a1aa; /* zinc-400 */
+  
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --void: #000000;
+  --panel-bg: #09090b;
+  --panel-border: #27272a;
+  --accent-main: #ffffff;
+  --accent-secondary: #f4f4f5;
+  --status-good: #ffffff;
+  --status-bad: #ef4444;
+  --text-main: #fafafa;
+  --text-muted: #a1a1aa;
+}
+
+html, body {
+  height: 100%;
+  background-color: var(--void);
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+  background-size: 24px 24px;
+  color: var(--text-main);
+  overflow: hidden; 
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 21st.dev Bento Panel Style */
+.glass-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  border-radius: 8px; /* Slightly sharper corners */
+}
+
+.glass-panel-header {
+  background: #09090b;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+/* Minimalist Developer Buttons */
+.btn-glass {
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  color: var(--text-main);
+  transition: all 0.15s ease;
+  outline: none;
+}
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #3f3f46; /* zinc-700 */
+}
+.btn-glass:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.02);
+}
+.btn-glass:focus-visible {
+  box-shadow: 0 0 0 2px #000, 0 0 0 4px var(--text-muted);
+}
+
+/* Primary Button (White with black text, very 21st.dev/Vercel) */
+.btn-primary {
+  background: var(--accent-main);
+  color: #000000 !important;
+  border: 1px solid var(--accent-main);
+  transition: all 0.15s ease;
+  outline: none;
+}
+.btn-primary:hover {
+  background: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+}
+.btn-primary:active {
+  transform: scale(0.98);
+}
+.btn-primary:focus-visible {
+  box-shadow: 0 0 0 2px #000, 0 0 0 4px var(--accent-main);
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--status-bad) !important;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  transition: all 0.15s ease;
+  outline: none;
+}
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+.btn-danger:active {
+  transform: scale(0.98);
+}
+.btn-danger:focus-visible {
+  box-shadow: 0 0 0 2px #000, 0 0 0 4px var(--status-bad);
+}
+
+/* Remove crazy glows for 21st.dev aesthetic, keep it sharp */
+.glow-text {
+  text-shadow: none;
+}
+.glow-border {
+  box-shadow: none;
+}
+
+/* Interactive elements scale */
+.scale-active:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* Custom scrollbar for panels - minimal */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Animations - fast and subtle */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Stagger sequence utility - slide up subtly */
+@keyframes fadeInUpSubtle {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.stagger-item {
+  animation: fadeInUpSubtle 0.3s ease backwards;
+}
+.stagger-1 { animation-delay: 20ms; }
+.stagger-2 { animation-delay: 40ms; }
+.stagger-3 { animation-delay: 60ms; }
+.stagger-4 { animation-delay: 80ms; }
+.stagger-5 { animation-delay: 100ms; }
+
+
+
+
