@@ -175,7 +175,11 @@ def scan_qwe006_gradient(circuit: QuantumCircuit):
 
 def _write_report_html(findings, n_qubits: int, depth: int, verdict_text: str):
     """Write standalone report.html next to main.py."""
-    out_path = pathlib.Path(__file__).resolve().parent / "report.html"
+    try:
+        base_dir = pathlib.Path(__file__).resolve().parent
+    except Exception:
+        base_dir = pathlib.Path(".")
+    out_path = base_dir / "report.html"
     is_failing = "TRIAGE REQUIRED" in verdict_text
     verdict_cls = "fail" if is_failing else "pass"
 
@@ -300,4 +304,8 @@ def run_triage():
 
 
 if __name__ == "__main__":
-    sys.exit(run_triage())
+    rc = run_triage()
+    # In CLI terminal environments, propagate exit code.
+    # In web/Pyodide environments (e.g. Qollab exec), avoid raising SystemExit traceback.
+    if "__file__" in globals() and "pyodide" not in sys.modules:
+        sys.exit(rc)
