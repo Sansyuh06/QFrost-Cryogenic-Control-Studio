@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QFrost Triage — Static Weakness Scanner for Quantum Circuits</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111827;
+      --card-border: #1f293d;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --amber: #f59e0b;
+      --amber-glow: rgba(245, 158, 11, 0.15);
+      --cyan: #06b6d4;
+      --crit: #ef4444;
+      --high: #f97316;
+      --med: #eab308;
+      --low: #3b82f6;
+      --info: #6b7280;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      padding: 0;
+    }
+    .hero {
+      padding: 60px 24px 40px;
+      text-align: center;
+      border-bottom: 1px solid var(--card-border);
+      background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.08) 0%, transparent 60%);
+    }
+    .badge-pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--amber);
+      margin-bottom: 16px;
+    }
+    h1 { font-size: 38px; font-weight: 800; letter-spacing: -1px; color: #fff; margin-bottom: 12px; }
+    .tagline { font-size: 20px; color: var(--amber); font-weight: 600; margin-bottom: 16px; }
+    .subtitle { max-width: 680px; margin: 0 auto; color: var(--text-muted); font-size: 15px; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+    .section-title { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .section-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+
+    /* QWE Table */
+    .table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      overflow-x: auto;
+      margin-bottom: 50px;
+    }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+    th { background: #0d121f; padding: 14px 16px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--card-border); }
+    td { padding: 12px 16px; border-bottom: 1px solid var(--card-border); }
+    tr:last-child td { border-bottom: none; }
+    .sev-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .sev-CRITICAL { background: #450a0a; color: #fca5a5; border: 1px solid #dc2626; }
+    .sev-HIGH { background: #431407; color: #fdba74; border: 1px solid #ea580c; }
+    .sev-MEDIUM { background: #422006; color: #fde047; border: 1px solid #ca8a04; }
+    .sev-LOW { background: #172554; color: #93c5fd; border: 1px solid #2563eb; }
+    .sev-INFO { background: #1f2937; color: #d1d5db; border: 1px solid #4b5563; }
+
+    /* Formula Card */
+    .formula-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 50px;
+    }
+    .math-display {
+      background: #090d16;
+      border: 1px solid var(--card-border);
+      padding: 14px 20px;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: var(--amber);
+      font-size: 15px;
+      margin: 12px 0;
+      overflow-x: auto;
+    }
+
+    /* Gallery */
+    .gallery-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      background: #111827;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { border-color: var(--amber); color: #fff; }
+    .tab-btn.active {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: var(--amber);
+      color: var(--amber);
+      font-weight: 600;
+    }
+
+    .gallery-display {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+    .disclaimer-box {
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #a5f3fc;
+      margin-bottom: 20px;
+    }
+
+    .finding-item {
+      background: #0d121f;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .finding-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .finding-title { font-weight: 600; font-size: 15px; color: #fff; }
+    .score-badge { background: #1f2937; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; color: var(--amber); }
+
+    footer {
+      border-top: 1px solid var(--card-border);
+      padding: 30px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+  </style>
+  <script src="gallery_data.js"></script>
+</head>
+<body>
+  <div class="hero">
+    <div class="badge-pill">Supported by Qollab &amp; IonQ • Hackathon Submission #2</div>
+    <h1>QFrost Triage</h1>
+    <div class="tagline">"Every circuit has bugs. Some bill per shot."</div>
+    <p class="subtitle">
+      A static risk and vulnerability scanner for Qiskit circuits. Discovers quantified weaknesses (QWEs), assigns CVSS-for-quantum severity scores, and outputs SARIF reports for CI/CD gates. Zero QPU execution, zero shots billed.
+    </p>
+  </div>
+
+  <div class="container">
+    <!-- QWE Master Table -->
+    <h2 class="section-title">Quantum Weakness Enumeration (QWE)</h2>
+    <p class="section-desc">Open catalog of quantifiable algorithmic and hardware failure modes.</p>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Severity</th>
+            <th>Headline Condition</th>
+            <th>Primary Literature Citation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>QWE-001</strong></td>
+            <td>Unbounded Cut Overhead</td>
+            <td><span class="sev-badge sev-CRITICAL">CRITICAL</span></td>
+            <td>4^k &ge; 64&times; shot inflation (k &ge; 3 cut 2Q gates)</td>
+            <td>Peng et al. <em>PRL</em> 125, 150504 (2020)</td>
+          </tr>
+          <tr>
+            <td><strong>QWE-002</strong></td>
+            <td>Layout-Inflation / SWAP Storm</td>
+            <td><span class="sev-badge sev-HIGH">HIGH</span></td>
+            <td>Transpiled 2Q depth &ge; 2.0&times; original on heavy-hex</td>
+            <td>Li, Ding, Xie <em>ASPLOS</em> 2019 (SABRE)</td>
+          </tr>
+          <tr>
+            <td><strong>QWE-003</strong></td>
+            <td>Unmitigated Readout Bias</td>
+            <td><span class="sev-badge sev-HIGH">HIGH</span></td>
+            <td>Measured qubits &ge; 6 and expected misread &gt; 5.0%</td>
+            <td>Nation et al. <em>PRX Quantum</em> 2, 040326 (2021)</td>
+          </tr>
+          <tr>
+            <td><strong>QWE-004</strong></td>
+            <td>Fridge-Roundtrip Deadlock</td>
+            <td><span class="sev-badge sev-CRITICAL">CRITICAL</span></td>
+            <td>Classical feedback latency &gt; T2* (50 &mu;s)</td>
+            <td>Salathe et al. <em>Phys. Rev. Applied</em> 9 (2018)</td>
+          </tr>
+          <tr>
+            <td><strong>QWE-005</strong></td>
+            <td>Decoder Budget Blowout</td>
+            <td><span class="sev-badge sev-INFO">INFO</span></td>
+            <td>Cycle latency vs 1,000 ns (roadmap advisory: pre-2029)</td>
+            <td>Fowler et al. <em>Phys. Rev. A</em> 86 (2012)</td>
+          </tr>
+          <tr>
+            <td><strong>QWE-006</strong></td>
+            <td>Vanishing-Gradient Ansatz</td>
+            <td><span class="sev-badge sev-HIGH">HIGH</span></td>
+            <td>Parameterized 2Q layers + global measurement</td>
+            <td>McClean et al. <em>Nat. Commun.</em> 9, 4812 (2018)</td>
+          </tr>
+          <tr>
+            <td><strong>QWE-007</strong></td>
+            <td>Idle Qubits During Long Gates</td>
+            <td><span class="sev-badge sev-LOW">LOW</span></td>
+            <td>Spectator idle ratio &gt; 30% of circuit duration</td>
+            <td>Murali et al. <em>ASPLOS</em> 2019</td>
+          </tr>
+          <tr>
+            <td><strong>QWE-008</strong></td>
+            <td>Depth Exceeds Coherence Envelope</td>
+            <td><span class="sev-badge sev-MEDIUM">MEDIUM</span></td>
+            <td>Circuit execution duration &gt; T2* (50 &mu;s)</td>
+            <td>Krantz et al. <em>Appl. Phys. Rev.</em> 6 (2019)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Scoring Formula -->
+    <h2 class="section-title">The Scoring Rule: "CVSS for Quantum"</h2>
+    <p class="section-desc">Quantified, logarithmic risk scoring derived from hardware physics budgets.</p>
+    <div class="formula-card">
+      <div class="math-display">
+        score = clamp(1.0 + 9.0 * log10(max_ratio) / log10(cap), 1.0, 10.0)
+      </div>
+      <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">
+        Where <code>max_ratio</code> is the headline cost multiplier relative to the engineering threshold, and <code>cap</code> is the ratio mapping to 10.0.
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; font-size: 13px;">
+        <span class="sev-badge sev-CRITICAL">&ge; 9.0 CRITICAL</span>
+        <span class="sev-badge sev-HIGH">&ge; 7.0 HIGH</span>
+        <span class="sev-badge sev-MEDIUM">&ge; 4.0 MEDIUM</span>
+        <span class="sev-badge sev-LOW">&ge; 2.0 LOW</span>
+        <span class="sev-badge sev-INFO">&lt; 2.0 INFO</span>
+      </div>
+    </div>
+
+    <!-- Sample Gallery -->
+    <h2 class="section-title">Sample Gallery</h2>
+    <p class="section-desc">Select an example circuit to replay its pre-computed static scan results.</p>
+    
+    <div class="disclaimer-box">
+      <strong>Note:</strong> These are <em>example replays</em> pre-computed and committed as JSON. To scan your own custom circuits, run the CLI locally (<code>python -m qfrost.scan</code>) or open the project in Qollab. No live in-browser scanning promise.
+    </div>
+
+    <div class="gallery-tabs" id="tabs-container"></div>
+    <div class="gallery-display" id="gallery-output">
+      <p style="color:var(--text-muted);">Loading sample replays...</p>
+    </div>
+  </div>
+
+  <footer>
+    QFrost Triage • Supported by Qollab &amp; IonQ • Zero Hardware Execution • MIT License
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (typeof GALLERY_DATA === "undefined") {
+        document.getElementById("gallery-output").innerHTML = "<p style='color:#ef4444;'>Failed to load precomputed gallery data.</p>";
+        return;
+      }
+
+      const fileKeys = Object.keys(GALLERY_DATA);
+      const tabsContainer = document.getElementById("tabs-container");
+      const outputContainer = document.getElementById("gallery-output");
+
+      function renderCircuit(key) {
+        // Update active tab button
+        document.querySelectorAll(".tab-btn").forEach(b => {
+          b.classList.toggle("active", b.dataset.key === key);
+        });
+
+        const report = GALLERY_DATA[key];
+        const stats = report.environment.circuit_stats || {};
+        const isFail = report.has_blocking_findings;
+
+        let findingsHtml = "";
+        report.findings.forEach(f => {
+          findingsHtml += `
+            <div class="finding-item">
+              <div class="finding-header">
+                <div>
+                  <span class="sev-badge sev-${f.severity}">${f.severity}</span>
+                  <span class="finding-title" style="margin-left: 8px;">${f.id} — ${f.title}</span>
+                </div>
+                <span class="score-badge">${f.score.toFixed(1)} / 10.0</span>
+              </div>
+              <p style="font-size: 13px; color: #d1d5db; margin-bottom: 6px;">${f.evidence.headline || f.title}</p>
+              <p style="font-size: 12px; color: #9ca3af; margin-bottom: 4px;"><strong>Impact:</strong> ${f.impact}</p>
+              <p style="font-size: 12px; color: var(--cyan);"><strong>Fix:</strong> ${f.fix}</p>
+            </div>
+          `;
+        });
+
+        outputContainer.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--card-border); padding-bottom:12px;">
+            <div>
+              <h3 style="font-size:18px; color:#fff;">Circuit: <code>${key}</code></h3>
+              <p style="font-size:12px; color:var(--text-muted);">${stats.n_qubits || '?'} Qubits • Depth ${stats.depth || '?'}</p>
+            </div>
+            <div style="padding:6px 14px; border-radius:6px; font-weight:600; font-size:13px; background:${isFail ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)'}; color:${isFail ? '#fca5a5' : '#6ee7b7'}; border:1px solid ${isFail ? '#dc2626' : '#10b981'};">
+              ${report.verdict}
+            </div>
+          </div>
+          <div>${findingsHtml}</div>
+        `;
+      }
+
+      fileKeys.forEach((key, index) => {
+        const btn = document.createElement("button");
+        btn.className = "tab-btn" + (index === 0 ? " active" : "");
+        btn.textContent = key;
+        btn.dataset.key = key;
+        btn.onclick = () => renderCircuit(key);
+        tabsContainer.appendChild(btn);
+      });
+
+      if (fileKeys.length > 0) {
+        renderCircuit(fileKeys[0]);
+      }
+    });
+  </script>
+</body>
+</html>

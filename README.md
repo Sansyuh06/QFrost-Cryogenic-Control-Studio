@@ -1,3 +1,6 @@
+> **July 2026:** Cryogenic Surface Code Decoder Studio (research prototype — `backend/`, `frontend/`, `cryo-composer-3d/` remain as-is).  
+> **October 2026:** The prototype's budget-math became one analyzer in a bigger idea: **QFrost Triage**, a static weakness scanner for Qiskit circuits → [`qfrost-triage/`](qfrost-triage/). Supported by Qollab & IonQ.
+
 # Cryogenic Surface Code Decoder Studio
 
 A full-stack application for visualizing and benchmarking classical decoding algorithms for quantum surface-code error correction against the real ~1 microsecond cryogenic reaction budget.
