@@ -61,7 +61,10 @@ def scan(circuit: QuantumCircuit, consts: Optional[Any] = None) -> List[Finding]
                 measured_qubits.add(circuit.find_bit(q).index)
             offending_gate_indices.append(idx)
 
-    # If no explicit measurements, global state tomography / global cost function is assumed
+    # If explicit measurements exist and are local (<6 qubits), no barren plateau
+    if len(measured_qubits) > 0 and len(measured_qubits) < 6:
+        return []
+
     effective_n = len(measured_qubits) if len(measured_qubits) >= 6 else n_qubits
     if effective_n < 6:
         return []

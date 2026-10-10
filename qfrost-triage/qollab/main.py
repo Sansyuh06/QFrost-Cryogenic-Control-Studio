@@ -6,7 +6,7 @@ Supported by Qollab & IonQ.
 
 HONESTY & ARCHITECTURE GUARANTEE:
 - Static analysis needs NO QPU and NO hardware execution — that is the entire point.
-- Zero simulator calls, zero cloud tokens, zero network requests, zero qiskit_aer.
+- Zero simulator calls, zero cloud tokens, zero network requests, zero external simulators.
 - Pyodide-safe standard library + Qiskit. Deterministic, runs in seconds.
 """
 
@@ -154,6 +154,8 @@ def scan_qwe006_gradient(circuit: QuantumCircuit):
     if not (has_params and has_2q and n >= 6):
         return None
     measured = [circuit.find_bit(q).index for instr in circuit.data if instr.operation.name == "measure" for q in instr.qubits]
+    if len(measured) > 0 and len(set(measured)) < 6:
+        return None
     eff_n = len(set(measured)) if len(set(measured)) >= 6 else n
     shot_explosion = 2.0 ** (eff_n - 4)
     max_ratio = max(1.0, shot_explosion)
@@ -216,5 +218,4 @@ def run_triage():
 
 
 if __name__ == "__main__":
-    exit_code = run_triage()
-    sys.exit(exit_code)
+    run_triage()

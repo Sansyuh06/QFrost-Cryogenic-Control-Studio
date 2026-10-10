@@ -2,7 +2,7 @@
 QFrost Triage — Canonical Constants for Qollab.
 
 HONESTY GUARANTEE:
-Static analysis only — no QPU execution, no qiskit_aer.
+Static analysis only — no QPU execution, no external simulators.
 All constants cited to literature or explicitly labeled model assumptions.
 Supported by Qollab & IonQ.
 """
