@@ -1,0 +1,66 @@
+[
+  {
+    "id": "QWE-001",
+    "title": "Unbounded Cut Overhead",
+    "severity": "CRITICAL",
+    "headline_condition": "4^k >= 64x shot inflation (k >= 3 cut two-qubit gates)",
+    "citation": "Peng et al. Phys. Rev. Lett. 125, 150504 (2020)",
+    "mitigation": "Constrain bisection cut width to k <= 2 or employ wire cutting with mid-circuit reset."
+  },
+  {
+    "id": "QWE-002",
+    "title": "Layout-Inflation / SWAP Storm",
+    "severity": "HIGH",
+    "headline_condition": "Transpiled 2Q depth >= 2.0x original on sparse heavy-hex",
+    "citation": "Li, Ding, Xie ASPLOS 2019 (SABRE routing)",
+    "mitigation": "Apply SABRE bidirectional layout optimization and initial physical qubit placement."
+  },
+  {
+    "id": "QWE-003",
+    "title": "Unmitigated Readout Bias",
+    "severity": "HIGH",
+    "headline_condition": "Measured qubits >= 6 and expected misread > 5.0%",
+    "citation": "Nation et al. PRX Quantum 2, 040326 (2021) (M3)",
+    "mitigation": "Apply M3 matrix-free measurement mitigation or T-REX twirled readout error extinguishing."
+  },
+  {
+    "id": "QWE-004",
+    "title": "Fridge-Roundtrip Deadlock",
+    "severity": "CRITICAL",
+    "headline_condition": "Mid-circuit dynamic feedforward latency exceeds T2* dephasing envelope",
+    "citation": "Salathe et al. Phys. Rev. Applied 9, 034011 (2018)",
+    "mitigation": "Deploy cryogenic 4K FPGA controllers or replace feedforwards with deferred measurement."
+  },
+  {
+    "id": "QWE-005",
+    "title": "Decoder Budget Blowout",
+    "severity": "INFO",
+    "headline_condition": "Cycle latency exceeds 1000 ns reaction budget (roadmap advisory: not exploitable pre-2029)",
+    "citation": "Fowler et al. Phys. Rev. A 86, 032324 (2012)",
+    "mitigation": "Migrate to fast decoders (Union-Find, AFS, QECOOL, NISQ+) at the 4K stage."
+  },
+  {
+    "id": "QWE-006",
+    "title": "Vanishing-Gradient Ansatz",
+    "severity": "HIGH",
+    "headline_condition": "Parameterized 2Q layers present with global measurement observable",
+    "citation": "McClean et al. Nat. Commun. 9, 4812 (2018)",
+    "mitigation": "Evaluate local few-body Pauli observables (Cerezo et al. 2021) or identity block initialization."
+  },
+  {
+    "id": "QWE-007",
+    "title": "Idle Qubits During Long Gates",
+    "severity": "LOW",
+    "headline_condition": "Spectator qubits idle for > 30% of total circuit execution duration",
+    "citation": "Murali et al. ASPLOS 2019; Strikis et al. npj Quantum Inf 7, 142 (2021)",
+    "mitigation": "Insert XY4 or CPMG dynamical decoupling pulse sequences in spectator idle gaps."
+  },
+  {
+    "id": "QWE-008",
+    "title": "Depth Exceeds Coherence Envelope",
+    "severity": "MEDIUM",
+    "headline_condition": "Estimated execution duration exceeds physical T2* dephasing threshold (50 us)",
+    "citation": "Krantz et al. Appl. Phys. Rev. 6, 021318 (2019)",
+    "mitigation": "Compress gate depth with KAK pulse synthesis or target long-coherence trapped-ion hardware."
+  }
+]
