@@ -123,7 +123,7 @@
   <meta charset="utf-8">
   <title>QFrost Triage Report — ${esc(circuitName)}</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Liberation Sans", sans-serif; background: #0b0e13; color: #f0f4fc; margin: 0; padding: 24px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0b0e13; color: #f0f4fc; margin: 0; padding: 24px; }
     .report-wrap { max-width: 1000px; margin: 0 auto; background: #121721; border: 1px solid #243044; border-radius: 8px; padding: 24px; }
     h1 { margin-top: 0; font-size: 22px; color: #fff; }
     .meta { font-family: ui-monospace, monospace; font-size: 13px; color: #8c9cb8; margin-bottom: 16px; }
@@ -287,9 +287,9 @@
     }
   }
 
-  // DOM auto-initialization in browser
+  // DOM auto-initialization in browser / sandboxed iframes
   if (typeof document !== "undefined") {
-    document.addEventListener("DOMContentLoaded", function () {
+    function bootUI() {
       const select = document.getElementById("sample-select");
       const textarea = document.getElementById("circuit-input");
       const btnScan = document.getElementById("btn-scan");
@@ -305,6 +305,7 @@
 
       // Populate select dropdown if present
       if (select) {
+        select.innerHTML = '<option value="">-- Or choose from all fixtures --</option>';
         samples.forEach(s => {
           const opt = document.createElement("option");
           opt.value = s.name;
@@ -363,20 +364,26 @@
       }
 
       if (dropZone) {
-        dropZone.addEventListener("click", () => {
-          if (fileInput) fileInput.click();
+        dropZone.addEventListener("click", (e) => {
+          if (e.target !== fileInput && fileInput) {
+            fileInput.click();
+          }
         });
 
-        dropZone.addEventListener("dragover", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          dropZone.classList.add("dragover");
+        ["dragenter", "dragover"].forEach(evt => {
+          dropZone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.add("dragover");
+          });
         });
 
-        dropZone.addEventListener("dragleave", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          dropZone.classList.remove("dragover");
+        ["dragleave", "dragend"].forEach(evt => {
+          dropZone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.remove("dragover");
+          });
         });
 
         dropZone.addEventListener("drop", (e) => {
@@ -388,6 +395,15 @@
           }
         });
       }
+
+      // Global window drop handler
+      window.addEventListener("dragover", (e) => e.preventDefault());
+      window.addEventListener("drop", (e) => {
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          e.preventDefault();
+          handleFile(e.dataTransfer.files[0]);
+        }
+      });
 
       if (fileInput) {
         fileInput.addEventListener("change", (e) => {
@@ -411,6 +427,15 @@
         });
       }
 
+      // Live scan debounced on paste or typing
+      let debounceTimer = null;
+      textarea.addEventListener("input", function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          executeScan();
+        }, 300);
+      });
+
       // Initial scan with first sample if available
       if (samples.length > 0) {
         const initial = samples.find(s => s.name.includes("ghz_wide")) || samples[0];
@@ -419,7 +444,13 @@
         textarea.value = initial.text;
         executeScan(initial.name);
       }
-    });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", bootUI);
+    } else {
+      bootUI();
+    }
   }
 
   return {

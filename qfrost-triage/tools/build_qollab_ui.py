@@ -69,13 +69,14 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
           <span>Circuit Input &amp; Upload</span>
         </div>
 
-        <!-- Drag & Drop Upload Zone -->
-        <div id="drop-zone" class="drop-zone" tabindex="0" role="button" aria-label="Upload circuit file">
+        <!-- Drag & Drop Upload Zone (Native Label linked to file-input) -->
+        <label for="file-input" id="drop-zone" class="drop-zone">
           <div class="drop-zone-icon">⚡</div>
           <div class="drop-zone-text">Drop your circuit file here, or click to browse</div>
           <div class="drop-zone-subtext">Supports OpenQASM 3 (.qasm, .qasm3) and Python circuit files</div>
+          <span class="btn btn-secondary" style="display:inline-block; margin-top:8px; pointer-events:none;">📁 Browse Circuit File</span>
           <input type="file" id="file-input" class="file-input-hidden" accept=".qasm,.qasm3,.txt,.py">
-        </div>
+        </label>
 
         <!-- Quick Sample Pills -->
         <div class="quick-samples">
