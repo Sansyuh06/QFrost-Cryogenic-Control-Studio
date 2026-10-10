@@ -342,13 +342,33 @@
       let currentCircuitName = "circuit.qasm3";
 
       function executeScan(nameOverride) {
-        const code = textarea.value;
+        const code = textarea ? textarea.value : "";
         const circuitName = nameOverride || currentCircuitName;
+        if (btnScan) {
+          const orig = btnScan.textContent;
+          btnScan.textContent = "Scanning...";
+          setTimeout(() => { if (btnScan) btnScan.textContent = orig; }, 200);
+        }
         if (typeof QFrostScanner !== "undefined" && QFrostScanner.runScan) {
-          const res = QFrostScanner.runScan(code, circuitName);
-          renderFindings(res, container);
+          try {
+            const res = QFrostScanner.runScan(code, circuitName);
+            renderFindings(res, container);
+          } catch (err) {
+            console.error("Scan error:", err);
+          }
         }
       }
+
+      window.executeScan = executeScan;
+      window.executeQFrostScan = executeScan;
+
+      function clearCircuit() {
+        if (textarea) textarea.value = "";
+        currentCircuitName = "empty.qasm3";
+        if (select) select.value = "";
+        executeScan("empty.qasm3");
+      }
+      window.clearCircuit = clearCircuit;
 
       // File drag-and-drop & file picker support
       function handleFile(file) {
@@ -413,18 +433,18 @@
         });
       }
 
+      btnScan.onclick = function(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        executeScan();
+      };
       btnScan.addEventListener("click", () => executeScan());
 
       if (btnClear) {
-        btnClear.addEventListener("click", function () {
-          textarea.value = "";
-          currentCircuitName = "empty.qasm3";
-          if (select) select.value = "";
-          if (typeof QFrostScanner !== "undefined" && QFrostScanner.runScan) {
-            const res = QFrostScanner.runScan("", "empty.qasm3");
-            renderFindings(res, container);
-          }
-        });
+        btnClear.onclick = function(e) {
+          if (e && e.preventDefault) e.preventDefault();
+          clearCircuit();
+        };
+        btnClear.addEventListener("click", clearCircuit);
       }
 
       // Live scan debounced on paste or typing

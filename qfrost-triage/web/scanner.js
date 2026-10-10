@@ -50,10 +50,83 @@
     return "INFO";
   }
 
+  function parsePythonQiskit(text) {
+    const ir = {
+      n_qubits: 0,
+      registers: { q: { start: 0, size: 0 } },
+      bitRegisters: { c: { start: 0, size: 0 } },
+      ops: [],
+      unsupported: [],
+      has_input_output: false
+    };
+
+    const qcMatch = text.match(/QuantumCircuit\s*\(\s*(\d+)/i);
+    if (qcMatch) {
+      ir.n_qubits = parseInt(qcMatch[1], 10);
+      ir.registers.q.size = ir.n_qubits;
+    }
+
+    if (/\.num_parameters\s*>\s*0|Parameter\s*\(/.test(text)) {
+      ir.has_input_output = true;
+    }
+
+    const lines = text.split(/\r?\n/);
+    for (let rawLine of lines) {
+      const line = rawLine.trim();
+      if (!line || line.startsWith("#")) continue;
+
+      const cxMatch = line.match(/\.(cx|cz|swap|rzz)\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)/i);
+      if (cxMatch) {
+        const q0 = parseInt(cxMatch[2], 10);
+        const q1 = parseInt(cxMatch[3], 10);
+        ir.ops.push({ name: cxMatch[1].toLowerCase(), qubits: [q0, q1], cond: false, params: "", is_measure: false, is_barrier: false });
+        if (q0 >= ir.n_qubits) ir.n_qubits = q0 + 1;
+        if (q1 >= ir.n_qubits) ir.n_qubits = q1 + 1;
+        continue;
+      }
+
+      const g1Match = line.match(/\.(h|x|y|z|s|t|rx|ry|rz)\s*\(\s*[^)]*?(\d+)\s*\)/i);
+      if (g1Match) {
+        const q0 = parseInt(g1Match[2], 10);
+        ir.ops.push({ name: g1Match[1].toLowerCase(), qubits: [q0], cond: false, params: "", is_measure: false, is_barrier: false });
+        if (q0 >= ir.n_qubits) ir.n_qubits = q0 + 1;
+        continue;
+      }
+
+      if (/\.barrier\s*\(/.test(line)) {
+        ir.ops.push({ name: "barrier", qubits: [], cond: false, params: "", is_measure: false, is_barrier: true });
+        continue;
+      }
+
+      const mMatch = line.match(/\.measure\s*\(\s*(\d+)/i);
+      if (mMatch) {
+        const q0 = parseInt(mMatch[1], 10);
+        ir.ops.push({ name: "measure", qubits: [q0], cond: false, params: "", is_measure: true, is_barrier: false });
+        continue;
+      }
+      if (/\.measure_all\s*\(\s*\)/i.test(line)) {
+        for (let i = 0; i < ir.n_qubits; i++) {
+          ir.ops.push({ name: "measure", qubits: [i], cond: false, params: "", is_measure: true, is_barrier: false });
+        }
+        continue;
+      }
+
+      if (/(?:if_test|if_else|switch_case|condition\s*=)/.test(line)) {
+        ir.ops.push({ name: "dynamic_branch", qubits: [], cond: true, params: "", is_measure: false, is_barrier: false });
+      }
+    }
+    ir.registers.q.size = ir.n_qubits;
+    return ir;
+  }
+
   // ============================================================================
   // OPENQASM 3 PARSER
   // ============================================================================
   function parseQasm3(text) {
+    if (/^\s*(?:import\s+qiskit|from\s+qiskit|.*=\s*QuantumCircuit|\bqc\.(?:h|cx|measure))/m.test(text)) {
+      return parsePythonQiskit(text);
+    }
+
     const lines = text.split(/\r?\n/);
     const cleanedStatements = [];
 

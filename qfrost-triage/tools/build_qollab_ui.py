@@ -93,8 +93,8 @@ INDEX_HTML_TEMPLATE = """<!DOCTYPE html>
         <textarea id="circuit-input" placeholder="// Paste OpenQASM 3 circuit here or drop a file above..."></textarea>
         
         <div class="btn-group">
-          <button id="btn-scan" class="btn btn-primary">Scan Circuit</button>
-          <button id="btn-clear" class="btn btn-secondary">Clear</button>
+          <button id="btn-scan" type="button" class="btn btn-primary" onclick="if(window.executeScan){window.executeScan();}">Scan Circuit</button>
+          <button id="btn-clear" type="button" class="btn btn-secondary" onclick="if(window.clearCircuit){window.clearCircuit();}">Clear</button>
         </div>
       </div>
 
