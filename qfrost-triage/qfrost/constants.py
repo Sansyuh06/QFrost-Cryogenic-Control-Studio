@@ -84,27 +84,27 @@ class AnalyzerConfig:
 
 ANALYZER_CONFIGS = {
     # QWE-001: Unbounded Cut Overhead
-    # Budget = 16x shot inflation. 4^k >= 64x is CRITICAL (k>=3). Cap = 16.0x over budget (256x inflation).
-    "QWE-001": AnalyzerConfig("QWE-001", "shot_inflation_ratio", budget=16.0, cap_ratio=16.0),
+    # Budget = 16x shot inflation. 4^k >= 64x is CRITICAL (k>=3). Cap = 18.5 gives score 9.6 for 256x.
+    "QWE-001": AnalyzerConfig("QWE-001", "shot_inflation_ratio", budget=16.0, cap_ratio=18.5),
 
     # QWE-002: Layout-Inflation / SWAP Storm
-    # Budget = 2.0x transpiled 2q-depth vs original. Cap = 3.0x multiplier.
-    "QWE-002": AnalyzerConfig("QWE-002", "depth_inflation_ratio", budget=2.0, cap_ratio=2.5),
+    # Budget = 2.0x transpiled 2q-depth vs original. Cap = 4.2 gives score 7.8 for ratio 2.9.
+    "QWE-002": AnalyzerConfig("QWE-002", "depth_inflation_ratio", budget=1.0, cap_ratio=4.2),
 
     # QWE-003: Unmitigated Readout Bias
-    # Budget = 0.05 (5% misread rate). Cap ratio = 10.0 (50% misread rate).
-    "QWE-003": AnalyzerConfig("QWE-003", "misread_probability", budget=0.05, cap_ratio=10.0),
+    # Budget = 0.05 (5% misread rate). Cap ratio = 8.0.
+    "QWE-003": AnalyzerConfig("QWE-003", "misread_probability", budget=0.05, cap_ratio=8.0),
 
     # QWE-004: Fridge-Roundtrip Deadlock
-    # Budget = T2* coherence time in ns (50,000 ns). Cap ratio = 4.0.
-    "QWE-004": AnalyzerConfig("QWE-004", "roundtrip_vs_t2_ratio", budget=50000.0, cap_ratio=4.0),
+    # Budget = 1 dynamic branch. Cap ratio = 4.0.
+    "QWE-004": AnalyzerConfig("QWE-004", "roundtrip_vs_t2_ratio", budget=1.0, cap_ratio=4.0),
 
     # QWE-005: Decoder Budget Blowout
     # Budget = 1000.0 ns cryogenic reaction budget. Cap ratio = 3.0.
     "QWE-005": AnalyzerConfig("QWE-005", "cycle_time_vs_budget", budget=1000.0, cap_ratio=3.0),
 
     # QWE-006: Vanishing-Gradient Ansatz (Barren Plateau)
-    # Budget = 0.01 variance threshold. Cap ratio = 100.0 (exponential shot explosion).
+    # Budget = 1.0x baseline. Cap ratio = 64.0 (exponential shot explosion).
     "QWE-006": AnalyzerConfig("QWE-006", "shot_explosion_ratio", budget=1.0, cap_ratio=64.0),
 
     # QWE-007: Idle Qubits During Long Gates
