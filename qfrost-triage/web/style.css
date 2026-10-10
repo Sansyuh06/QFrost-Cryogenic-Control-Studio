@@ -46,7 +46,7 @@ body {
 }
 
 .container {
-  max-width: 1180px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -117,6 +117,78 @@ header {
   align-items: center;
 }
 
+/* Drop zone & file upload */
+.drop-zone {
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  background: rgba(18, 23, 33, 0.6);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.drop-zone:hover, .drop-zone.dragover {
+  border-color: var(--amber);
+  background: var(--amber-dim);
+}
+
+.drop-zone-icon {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.drop-zone-text {
+  font-size: 13px;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.drop-zone-subtext {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+/* Quick sample pills */
+.quick-samples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.quick-samples-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.sample-pill {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sample-pill:hover, .sample-pill.active {
+  border-color: var(--amber);
+  color: var(--amber);
+  background: var(--amber-dim);
+}
+
 .controls-row {
   display: flex;
   gap: 10px;
@@ -145,7 +217,7 @@ select:focus, textarea:focus {
 
 textarea {
   width: 100%;
-  height: 380px;
+  height: 320px;
   background: #06080c;
   color: #d1d5db;
   border: 1px solid var(--border-color);
@@ -194,6 +266,36 @@ textarea {
   margin-bottom: 12px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border-color);
+}
+
+/* Metrics row */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.metric-box {
+  background: #090d14;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.metric-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  font-family: ui-monospace, monospace;
+}
+
+.metric-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: 2px;
 }
 
 .verdict-banner {
@@ -321,7 +423,9 @@ textarea {
 }
 
 .download-bar {
-  margin-top: 12px;
+  margin-top: 14px;
   display: flex;
+  gap: 10px;
   justify-content: flex-end;
+  flex-wrap: wrap;
 }

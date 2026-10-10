@@ -22,14 +22,31 @@
       <!-- Input Pane -->
       <div class="pane">
         <div class="pane-title">
-          <span>Circuit Input (OpenQASM 3)</span>
+          <span>Circuit Input &amp; Upload</span>
         </div>
+
+        <!-- Drag & Drop Upload Zone -->
+        <div id="drop-zone" class="drop-zone" tabindex="0" role="button" aria-label="Upload circuit file">
+          <div class="drop-zone-icon">⚡</div>
+          <div class="drop-zone-text">Drop your circuit file here, or click to browse</div>
+          <div class="drop-zone-subtext">Supports OpenQASM 3 (.qasm, .qasm3) and Python circuit files</div>
+          <input type="file" id="file-input" class="file-input-hidden" accept=".qasm,.qasm3,.txt,.py">
+        </div>
+
+        <!-- Quick Sample Pills -->
+        <div class="quick-samples">
+          <span class="quick-samples-label">Presets:</span>
+          <div id="sample-pills" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+        </div>
+
         <div class="controls-row">
           <select id="sample-select">
-            <option value="">-- Select Shipped Fixture --</option>
+            <option value="">-- Or choose from all fixtures --</option>
           </select>
         </div>
-        <textarea id="circuit-input" placeholder="// Paste OpenQASM 3 circuit here or choose a fixture above..."></textarea>
+
+        <textarea id="circuit-input" placeholder="// Paste OpenQASM 3 circuit here or drop a file above..."></textarea>
+        
         <div class="btn-group">
           <button id="btn-scan" class="btn btn-primary">Scan Circuit</button>
           <button id="btn-clear" class="btn btn-secondary">Clear</button>

@@ -967,8 +967,8 @@ if (typeof globalThis !== 'undefined') globalThis.QFROST_DATA = QFROST_DATA;
 // ---- boot.js ----
 /**
  * QFrost Triage — Web UI Boot & DOM Binder.
- * Renders verdict banner, findings cards, env line, honesty note,
- * and handles client-side report.html generation.
+ * Renders verdict banner, findings cards, metrics, honesty note,
+ * drag-and-drop codebase upload, and client-side report.html + SARIF generation.
  */
 
 (function (root, factory) {
@@ -1015,6 +1015,47 @@ if (typeof globalThis !== 'undefined') globalThis.QFROST_DATA = QFROST_DATA;
     }
 
     return `<div class="${cls}"><span>Verdict: ${esc(text)}</span></div>`;
+  }
+
+  function generateSarif(result) {
+    const findings = (result && result.findings) || [];
+    const circuitName = (result && result.circuit_name) || "circuit.qasm3";
+
+    const sarif = {
+      $schema: "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+      version: "2.1.0",
+      runs: [{
+        tool: {
+          driver: {
+            name: "QFrost Triage",
+            version: "0.1.0",
+            informationUri: "https://github.com/Sansyuh06/QFrost-Cryogenic-Control-Studio",
+            rules: findings.map(f => ({
+              id: f.id,
+              name: f.title,
+              shortDescription: { text: f.headline || f.title },
+              fullDescription: { text: f.impact || f.title },
+              helpUri: f.catalog_url || "https://github.com/Sansyuh06/QFrost-Cryogenic-Control-Studio",
+              properties: {
+                severity: f.severity,
+                score: f.score
+              }
+            }))
+          }
+        },
+        results: findings.map(f => ({
+          ruleId: f.id,
+          level: (f.severity === "CRITICAL" || f.severity === "HIGH") ? "error" : (f.severity === "MEDIUM" ? "warning" : "note"),
+          message: { text: `[${f.severity} ${f.score.toFixed(1)}] ${f.title} — ${f.headline}` },
+          locations: [{
+            physicalLocation: {
+              artifactLocation: { uri: circuitName }
+            }
+          }]
+        }))
+      }]
+    };
+    return JSON.stringify(sarif, null, 2);
   }
 
   function standaloneReport(result) {
@@ -1112,10 +1153,22 @@ if (typeof globalThis !== 'undefined') globalThis.QFROST_DATA = QFROST_DATA;
       : (summary.CRITICAL > 0 || summary.HIGH > 0);
     const verdictText = (result && result.verdict) || "";
 
+    const maxScore = findings.length > 0 
+      ? Math.max(...findings.map(f => Number(f.score) || 0)).toFixed(1)
+      : "1.0";
+
     let html = "";
 
     // Env line
     html += `<div class="env-line">${esc(n_qubits)} qubits · ${esc(n_ops)} ops · ${esc(n_unparsed)} unparsed line(s)</div>`;
+
+    // Metrics cards row
+    html += `<div class="metrics-row">`;
+    html += `  <div class="metric-box"><div class="metric-value">${esc(n_qubits)}</div><div class="metric-label">Qubits</div></div>`;
+    html += `  <div class="metric-box"><div class="metric-value">${esc(n_ops)}</div><div class="metric-label">Operations</div></div>`;
+    html += `  <div class="metric-box"><div class="metric-value" style="color:var(--amber)">${esc(maxScore)}</div><div class="metric-label">Max Score</div></div>`;
+    html += `  <div class="metric-box"><div class="metric-value" style="color:${hasBlocking ? 'var(--crit-border)' : '#10b981'}">${hasBlocking ? 'BLOCK' : 'PASS'}</div><div class="metric-label">Status</div></div>`;
+    html += `</div>`;
 
     // Verdict banner
     html += verdictHtml(summary, hasBlocking, verdictText);
@@ -1160,9 +1213,10 @@ if (typeof globalThis !== 'undefined') globalThis.QFROST_DATA = QFROST_DATA;
     html += `  <strong>Honesty guarantee:</strong> Static analysis only. Zero QPU execution. Quantified risk based on published cryo/coherence physics (Krantz 2019, Heinsoo 2018, Nation 2021). Never claims a circuit will succeed.`;
     html += `</div>`;
 
-    // Download report button
+    // Download action bar
     html += `<div class="download-bar">`;
-    html += `  <button id="btn-download-report" class="btn btn-secondary">Download report.html</button>`;
+    html += `  <button id="btn-export-sarif" class="btn btn-secondary">Export SARIF JSON</button>`;
+    html += `  <button id="btn-download-report" class="btn btn-primary">Download report.html</button>`;
     html += `</div>`;
 
     container.innerHTML = html;
@@ -1182,6 +1236,22 @@ if (typeof globalThis !== 'undefined') globalThis.QFROST_DATA = QFROST_DATA;
         URL.revokeObjectURL(url);
       });
     }
+
+    const sarifBtn = container.querySelector("#btn-export-sarif");
+    if (sarifBtn) {
+      sarifBtn.addEventListener("click", () => {
+        const sarifContent = generateSarif(result);
+        const blob = new Blob([sarifContent], { type: "application/json;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "qfrost-triage.sarif";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    }
   }
 
   // DOM auto-initialization in browser
@@ -1192,41 +1262,115 @@ if (typeof globalThis !== 'undefined') globalThis.QFROST_DATA = QFROST_DATA;
       const btnScan = document.getElementById("btn-scan");
       const btnClear = document.getElementById("btn-clear");
       const container = document.getElementById("findings-container");
+      const dropZone = document.getElementById("drop-zone");
+      const fileInput = document.getElementById("file-input");
+      const samplePillsContainer = document.getElementById("sample-pills");
 
-      if (!select || !textarea || !btnScan || !container) return;
+      if (!textarea || !btnScan || !container) return;
 
       const samples = (typeof QFROST_DATA !== "undefined" && QFROST_DATA.samples) || [];
 
-      samples.forEach(s => {
-        const opt = document.createElement("option");
-        opt.value = s.name;
-        opt.textContent = `${s.name} ${s.py_parse_ok ? "" : "(malformed)"}`;
-        select.appendChild(opt);
-      });
+      // Populate select dropdown if present
+      if (select) {
+        samples.forEach(s => {
+          const opt = document.createElement("option");
+          opt.value = s.name;
+          opt.textContent = `${s.name} ${s.py_parse_ok ? "" : "(malformed)"}`;
+          select.appendChild(opt);
+        });
 
-      function executeScan() {
+        select.addEventListener("change", function () {
+          const s = samples.find(x => x.name === select.value);
+          if (s) {
+            textarea.value = s.text;
+            executeScan(s.name);
+          }
+        });
+      }
+
+      // Populate quick pills if present
+      if (samplePillsContainer) {
+        samplePillsContainer.innerHTML = "";
+        samples.forEach(s => {
+          const pill = document.createElement("button");
+          pill.type = "button";
+          pill.className = "sample-pill";
+          pill.textContent = s.name.replace(".qasm3", "");
+          pill.addEventListener("click", () => {
+            textarea.value = s.text;
+            if (select) select.value = s.name;
+            executeScan(s.name);
+          });
+          samplePillsContainer.appendChild(pill);
+        });
+      }
+
+      let currentCircuitName = "circuit.qasm3";
+
+      function executeScan(nameOverride) {
         const code = textarea.value;
-        const selectedSample = select.value || "circuit.qasm3";
+        const circuitName = nameOverride || currentCircuitName;
         if (typeof QFrostScanner !== "undefined" && QFrostScanner.runScan) {
-          const res = QFrostScanner.runScan(code, selectedSample);
+          const res = QFrostScanner.runScan(code, circuitName);
           renderFindings(res, container);
         }
       }
 
-      select.addEventListener("change", function () {
-        const s = samples.find(x => x.name === select.value);
-        if (s) {
-          textarea.value = s.text;
-          executeScan();
-        }
-      });
+      // File drag-and-drop & file picker support
+      function handleFile(file) {
+        if (!file) return;
+        currentCircuitName = file.name;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          textarea.value = e.target.result;
+          if (select) select.value = "";
+          executeScan(file.name);
+        };
+        reader.readAsText(file);
+      }
 
-      btnScan.addEventListener("click", executeScan);
+      if (dropZone) {
+        dropZone.addEventListener("click", () => {
+          if (fileInput) fileInput.click();
+        });
+
+        dropZone.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.add("dragover");
+        });
+
+        dropZone.addEventListener("dragleave", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.remove("dragover");
+        });
+
+        dropZone.addEventListener("drop", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.remove("dragover");
+          if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleFile(e.dataTransfer.files[0]);
+          }
+        });
+      }
+
+      if (fileInput) {
+        fileInput.addEventListener("change", (e) => {
+          if (e.target.files && e.target.files.length > 0) {
+            handleFile(e.target.files[0]);
+          }
+        });
+      }
+
+      btnScan.addEventListener("click", () => executeScan());
 
       if (btnClear) {
         btnClear.addEventListener("click", function () {
           textarea.value = "";
-          select.value = "";
+          currentCircuitName = "empty.qasm3";
+          if (select) select.value = "";
           if (typeof QFrostScanner !== "undefined" && QFrostScanner.runScan) {
             const res = QFrostScanner.runScan("", "empty.qasm3");
             renderFindings(res, container);
@@ -1237,9 +1381,10 @@ if (typeof globalThis !== 'undefined') globalThis.QFROST_DATA = QFROST_DATA;
       // Initial scan with first sample if available
       if (samples.length > 0) {
         const initial = samples.find(s => s.name.includes("ghz_wide")) || samples[0];
-        select.value = initial.name;
+        if (select) select.value = initial.name;
+        currentCircuitName = initial.name;
         textarea.value = initial.text;
-        executeScan();
+        executeScan(initial.name);
       }
     });
   }
