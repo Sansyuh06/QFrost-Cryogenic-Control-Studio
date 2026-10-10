@@ -1,0 +1,658 @@
+[
+  {
+    "name": "barren_ansatz.qasm3",
+    "py_parse_ok": true,
+    "findings": [
+      {
+        "id": "QWE-006",
+        "severity": "CRITICAL",
+        "score": 10.0,
+        "evidence": {
+          "headline": "global observable on 12 qubits \u21d2 gradient variance ~2^-12 (shot inflation 256\u00d7)",
+          "n_qubits": 12,
+          "num_parameters": 2,
+          "two_qubit_gate_count": 12,
+          "variance_estimate": 0.000244140625,
+          "shot_explosion_ratio": 256.0,
+          "offending_gate_indices": [
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43
+          ],
+          "scoring_max_ratio": 256.0,
+          "scoring_cap": 64.0,
+          "scoring_formula": "clamp(1 + 9 * log10(256.000) / log10(64.000), 1.0, 10.0) = 10.0"
+        }
+      },
+      {
+        "id": "QWE-003",
+        "severity": "HIGH",
+        "score": 6.2,
+        "evidence": {
+          "headline": "measured 12 qubits \u21d2 16.6% expected misread (budget 5.0%)",
+          "n_measured_qubits": 12,
+          "measured_qubit_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "p_ro_per_qubit": 0.015,
+          "expected_misread_probability": 0.1659,
+          "misread_budget": 0.05,
+          "offending_gate_indices": [
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47
+          ],
+          "scoring_max_ratio": 3.317,
+          "scoring_cap": 8.0,
+          "scoring_formula": "clamp(1 + 9 * log10(3.317) / log10(8.000), 1.0, 10.0) = 6.2"
+        }
+      },
+      {
+        "id": "QWE-007",
+        "severity": "MEDIUM",
+        "score": 9.2,
+        "evidence": {
+          "headline": "spectator qubits idle 81.3% of execution window (budget 30%)",
+          "max_idle_ratio": 0.813,
+          "total_circuit_duration_ns": 2460.0,
+          "idle_budget_ratio": 0.3,
+          "idling_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "active_times_ns": {
+            "0": 460.0,
+            "1": 460.0,
+            "2": 460.0,
+            "3": 460.0,
+            "4": 460.0,
+            "5": 460.0,
+            "6": 460.0,
+            "7": 460.0,
+            "8": 460.0,
+            "9": 460.0,
+            "10": 460.0,
+            "11": 460.0
+          },
+          "scoring_max_ratio": 2.71,
+          "scoring_cap": 3.0,
+          "scoring_formula": "clamp(1 + 9 * log10(2.710) / log10(3.000), 1.0, 10.0) = 9.2"
+        }
+      },
+      {
+        "id": "QWE-005",
+        "severity": "INFO",
+        "score": 1.4,
+        "evidence": {
+          "headline": "hypothetical d=5 @4K cryo: 760/1000 ns \u2014 inside (roadmap finding)",
+          "advisory_tag": "not exploitable pre-2029 \u2014 roadmap finding",
+          "t_readout_ns": 300.0,
+          "t_cable_4k_ns": 80.0,
+          "t_cable_300k_ns": 240.0,
+          "t_decode_uf_d5_ns": 300.0,
+          "t_cycle_4k_ns": 760.0,
+          "t_cycle_300k_ns": 1080.0,
+          "reaction_budget_ns": 1000.0,
+          "cycle_to_budget_ratio_4k": 0.76,
+          "cycle_to_budget_ratio_300k": 1.08,
+          "scoring_formula": "T_cycle_4k = 300 + 2*80 + 300 = 760 ns (budget 1000 ns)"
+        }
+      },
+      {
+        "id": "QWE-001",
+        "severity": "INFO",
+        "score": 1.0,
+        "evidence": {
+          "headline": "min-cut k=2 \u21d2 4^2=16\u00d7 shot inflation (budget 16\u00d7)",
+          "k_cut_gates": 2,
+          "shot_inflation_overhead": 16,
+          "budget_overhead": 16.0,
+          "naive_split_k": 2,
+          "best_partition_1": [
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "best_partition_2": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            11
+          ],
+          "offending_gate_indices": [
+            16,
+            22
+          ],
+          "scoring_max_ratio": 1.0,
+          "scoring_cap": 18.5,
+          "scoring_formula": "clamp(1 + 9 * log10(1.000) / log10(18.500), 1.0, 10.0) = 1.0"
+        }
+      }
+    ]
+  },
+  {
+    "name": "c_if_trap.qasm3",
+    "py_parse_ok": true,
+    "findings": [
+      {
+        "id": "QWE-004",
+        "severity": "CRITICAL",
+        "score": 9.2,
+        "evidence": {
+          "headline": "45 dynamic branches imply 54.0 \u00b5s feedback wait vs T2* 50.0 \u00b5s",
+          "n_conditioned_branches": 45,
+          "roundtrip_latency_per_branch_ns": 1200.0,
+          "total_feedback_latency_ns": 54000.0,
+          "t2_star_ns": 50000.0,
+          "latency_to_t2_ratio": 1.08,
+          "offending_gate_indices": [
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47
+          ],
+          "scoring_max_ratio": 1.08,
+          "scoring_cap": 4.0,
+          "scoring_formula": "clamp(1 + 9 * log10(1.080) / log10(4.000), 1.0, 10.0) = 9.2"
+        }
+      },
+      {
+        "id": "QWE-007",
+        "severity": "MEDIUM",
+        "score": 10.0,
+        "evidence": {
+          "headline": "spectator qubits idle 100.0% of execution window (budget 30%)",
+          "max_idle_ratio": 1.0,
+          "total_circuit_duration_ns": 1120.0,
+          "idle_budget_ratio": 0.3,
+          "idling_qubits": [
+            0,
+            2,
+            3
+          ],
+          "active_times_ns": {
+            "0": 240.0,
+            "1": 1100.0,
+            "2": 0.0,
+            "3": 0.0
+          },
+          "scoring_max_ratio": 3.333,
+          "scoring_cap": 3.0,
+          "scoring_formula": "clamp(1 + 9 * log10(3.333) / log10(3.000), 1.0, 10.0) = 10.0"
+        }
+      },
+      {
+        "id": "QWE-005",
+        "severity": "INFO",
+        "score": 1.4,
+        "evidence": {
+          "headline": "hypothetical d=5 @4K cryo: 760/1000 ns \u2014 inside (roadmap finding)",
+          "advisory_tag": "not exploitable pre-2029 \u2014 roadmap finding",
+          "t_readout_ns": 300.0,
+          "t_cable_4k_ns": 80.0,
+          "t_cable_300k_ns": 240.0,
+          "t_decode_uf_d5_ns": 300.0,
+          "t_cycle_4k_ns": 760.0,
+          "t_cycle_300k_ns": 1080.0,
+          "reaction_budget_ns": 1000.0,
+          "cycle_to_budget_ratio_4k": 0.76,
+          "cycle_to_budget_ratio_300k": 1.08,
+          "scoring_formula": "T_cycle_4k = 300 + 2*80 + 300 = 760 ns (budget 1000 ns)"
+        }
+      }
+    ]
+  },
+  {
+    "name": "clean_bell.qasm3",
+    "py_parse_ok": true,
+    "findings": [
+      {
+        "id": "QWE-005",
+        "severity": "INFO",
+        "score": 1.4,
+        "evidence": {
+          "headline": "hypothetical d=5 @4K cryo: 760/1000 ns \u2014 inside (roadmap finding)",
+          "advisory_tag": "not exploitable pre-2029 \u2014 roadmap finding",
+          "t_readout_ns": 300.0,
+          "t_cable_4k_ns": 80.0,
+          "t_cable_300k_ns": 240.0,
+          "t_decode_uf_d5_ns": 300.0,
+          "t_cycle_4k_ns": 760.0,
+          "t_cycle_300k_ns": 1080.0,
+          "reaction_budget_ns": 1000.0,
+          "cycle_to_budget_ratio_4k": 0.76,
+          "cycle_to_budget_ratio_300k": 1.08,
+          "scoring_formula": "T_cycle_4k = 300 + 2*80 + 300 = 760 ns (budget 1000 ns)"
+        }
+      }
+    ]
+  },
+  {
+    "name": "deep_trotter.qasm3",
+    "py_parse_ok": true,
+    "findings": [
+      {
+        "id": "QWE-008",
+        "severity": "MEDIUM",
+        "score": 1.2,
+        "evidence": {
+          "headline": "circuit duration 51.4 \u00b5s > modeled T2* envelope 50.0 \u00b5s (1.03\u00d7)",
+          "circuit_duration_ns": 51420.0,
+          "circuit_duration_us": 51.42,
+          "t2_star_budget_ns": 50000.0,
+          "t2_star_budget_us": 50.0,
+          "coherence_ratio": 1.028,
+          "depth_1q": 1,
+          "depth_2q": 257,
+          "total_depth": 258,
+          "scoring_max_ratio": 1.028,
+          "scoring_cap": 4.0,
+          "scoring_formula": "clamp(1 + 9 * log10(1.028) / log10(4.000), 1.0, 10.0) = 1.2"
+        }
+      },
+      {
+        "id": "QWE-005",
+        "severity": "INFO",
+        "score": 1.4,
+        "evidence": {
+          "headline": "hypothetical d=5 @4K cryo: 760/1000 ns \u2014 inside (roadmap finding)",
+          "advisory_tag": "not exploitable pre-2029 \u2014 roadmap finding",
+          "t_readout_ns": 300.0,
+          "t_cable_4k_ns": 80.0,
+          "t_cable_300k_ns": 240.0,
+          "t_decode_uf_d5_ns": 300.0,
+          "t_cycle_4k_ns": 760.0,
+          "t_cycle_300k_ns": 1080.0,
+          "reaction_budget_ns": 1000.0,
+          "cycle_to_budget_ratio_4k": 0.76,
+          "cycle_to_budget_ratio_300k": 1.08,
+          "scoring_formula": "T_cycle_4k = 300 + 2*80 + 300 = 760 ns (budget 1000 ns)"
+        }
+      }
+    ]
+  },
+  {
+    "name": "distant_cx_chain.qasm3",
+    "py_parse_ok": true,
+    "findings": [
+      {
+        "id": "QWE-001",
+        "severity": "CRITICAL",
+        "score": 10.0,
+        "evidence": {
+          "headline": "min-cut k=5 \u21d2 4^5=1024\u00d7 shot inflation (budget 16\u00d7)",
+          "k_cut_gates": 5,
+          "shot_inflation_overhead": 1024,
+          "budget_overhead": 16.0,
+          "naive_split_k": 15,
+          "best_partition_1": [
+            0,
+            1,
+            2,
+            6,
+            9
+          ],
+          "best_partition_2": [
+            3,
+            4,
+            5,
+            7,
+            8
+          ],
+          "offending_gate_indices": [
+            1,
+            2,
+            3,
+            5,
+            10
+          ],
+          "scoring_max_ratio": 64.0,
+          "scoring_cap": 18.5,
+          "scoring_formula": "clamp(1 + 9 * log10(64.000) / log10(18.500), 1.0, 10.0) = 10.0"
+        }
+      },
+      {
+        "id": "QWE-007",
+        "severity": "MEDIUM",
+        "score": 5.2,
+        "evidence": {
+          "headline": "spectator qubits idle 50.0% of execution window (budget 30%)",
+          "max_idle_ratio": 0.5,
+          "total_circuit_duration_ns": 800.0,
+          "idle_budget_ratio": 0.3,
+          "idling_qubits": [
+            5
+          ],
+          "active_times_ns": {
+            "0": 600.0,
+            "1": 600.0,
+            "2": 600.0,
+            "3": 600.0,
+            "4": 600.0,
+            "5": 400.0,
+            "6": 600.0,
+            "7": 800.0,
+            "8": 600.0,
+            "9": 600.0
+          },
+          "scoring_max_ratio": 1.667,
+          "scoring_cap": 3.0,
+          "scoring_formula": "clamp(1 + 9 * log10(1.667) / log10(3.000), 1.0, 10.0) = 5.2"
+        }
+      },
+      {
+        "id": "QWE-005",
+        "severity": "INFO",
+        "score": 1.4,
+        "evidence": {
+          "headline": "hypothetical d=5 @4K cryo: 760/1000 ns \u2014 inside (roadmap finding)",
+          "advisory_tag": "not exploitable pre-2029 \u2014 roadmap finding",
+          "t_readout_ns": 300.0,
+          "t_cable_4k_ns": 80.0,
+          "t_cable_300k_ns": 240.0,
+          "t_decode_uf_d5_ns": 300.0,
+          "t_cycle_4k_ns": 760.0,
+          "t_cycle_300k_ns": 1080.0,
+          "reaction_budget_ns": 1000.0,
+          "cycle_to_budget_ratio_4k": 0.76,
+          "cycle_to_budget_ratio_300k": 1.08,
+          "scoring_formula": "T_cycle_4k = 300 + 2*80 + 300 = 760 ns (budget 1000 ns)"
+        }
+      }
+    ]
+  },
+  {
+    "name": "ghz_wide.qasm3",
+    "py_parse_ok": true,
+    "findings": [
+      {
+        "id": "QWE-001",
+        "severity": "CRITICAL",
+        "score": 9.6,
+        "evidence": {
+          "headline": "min-cut k=4 \u21d2 4^4=256\u00d7 shot inflation (budget 16\u00d7)",
+          "k_cut_gates": 4,
+          "shot_inflation_overhead": 256,
+          "budget_overhead": 16.0,
+          "naive_split_k": 4,
+          "best_partition_1": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "best_partition_2": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "offending_gate_indices": [
+            61,
+            62,
+            63,
+            64
+          ],
+          "scoring_max_ratio": 16.0,
+          "scoring_cap": 18.5,
+          "scoring_formula": "clamp(1 + 9 * log10(16.000) / log10(18.500), 1.0, 10.0) = 9.6"
+        }
+      },
+      {
+        "id": "QWE-003",
+        "severity": "HIGH",
+        "score": 6.2,
+        "evidence": {
+          "headline": "measured 12 qubits \u21d2 16.6% expected misread (budget 5.0%)",
+          "n_measured_qubits": 12,
+          "measured_qubit_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "p_ro_per_qubit": 0.015,
+          "expected_misread_probability": 0.1659,
+          "misread_budget": 0.05,
+          "offending_gate_indices": [
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76
+          ],
+          "scoring_max_ratio": 3.317,
+          "scoring_cap": 8.0,
+          "scoring_formula": "clamp(1 + 9 * log10(3.317) / log10(8.000), 1.0, 10.0) = 6.2"
+        }
+      },
+      {
+        "id": "QWE-007",
+        "severity": "MEDIUM",
+        "score": 4.2,
+        "evidence": {
+          "headline": "spectator qubits idle 44.5% of execution window (budget 30%)",
+          "max_idle_ratio": 0.445,
+          "total_circuit_duration_ns": 3640.0,
+          "idle_budget_ratio": 0.3,
+          "idling_qubits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "active_times_ns": {
+            "0": 2240.0,
+            "1": 2220.0,
+            "2": 2220.0,
+            "3": 2220.0,
+            "4": 2020.0,
+            "5": 2020.0,
+            "6": 2220.0,
+            "7": 2220.0,
+            "8": 2220.0,
+            "9": 2220.0,
+            "10": 2020.0,
+            "11": 2020.0
+          },
+          "scoring_max_ratio": 1.484,
+          "scoring_cap": 3.0,
+          "scoring_formula": "clamp(1 + 9 * log10(1.484) / log10(3.000), 1.0, 10.0) = 4.2"
+        }
+      },
+      {
+        "id": "QWE-005",
+        "severity": "INFO",
+        "score": 1.4,
+        "evidence": {
+          "headline": "hypothetical d=5 @4K cryo: 760/1000 ns \u2014 inside (roadmap finding)",
+          "advisory_tag": "not exploitable pre-2029 \u2014 roadmap finding",
+          "t_readout_ns": 300.0,
+          "t_cable_4k_ns": 80.0,
+          "t_cable_300k_ns": 240.0,
+          "t_decode_uf_d5_ns": 300.0,
+          "t_cycle_4k_ns": 760.0,
+          "t_cycle_300k_ns": 1080.0,
+          "reaction_budget_ns": 1000.0,
+          "cycle_to_budget_ratio_4k": 0.76,
+          "cycle_to_budget_ratio_300k": 1.08,
+          "scoring_formula": "T_cycle_4k = 300 + 2*80 + 300 = 760 ns (budget 1000 ns)"
+        }
+      }
+    ]
+  },
+  {
+    "name": "idle_spectators.qasm3",
+    "py_parse_ok": true,
+    "findings": [
+      {
+        "id": "QWE-007",
+        "severity": "MEDIUM",
+        "score": 10.0,
+        "evidence": {
+          "headline": "spectator qubits idle 100.0% of execution window (budget 30%)",
+          "max_idle_ratio": 1.0,
+          "total_circuit_duration_ns": 1620.0,
+          "idle_budget_ratio": 0.3,
+          "idling_qubits": [
+            2,
+            3
+          ],
+          "active_times_ns": {
+            "0": 1620.0,
+            "1": 1600.0,
+            "2": 20.0,
+            "3": 0.0
+          },
+          "scoring_max_ratio": 3.333,
+          "scoring_cap": 3.0,
+          "scoring_formula": "clamp(1 + 9 * log10(3.333) / log10(3.000), 1.0, 10.0) = 10.0"
+        }
+      },
+      {
+        "id": "QWE-005",
+        "severity": "INFO",
+        "score": 1.4,
+        "evidence": {
+          "headline": "hypothetical d=5 @4K cryo: 760/1000 ns \u2014 inside (roadmap finding)",
+          "advisory_tag": "not exploitable pre-2029 \u2014 roadmap finding",
+          "t_readout_ns": 300.0,
+          "t_cable_4k_ns": 80.0,
+          "t_cable_300k_ns": 240.0,
+          "t_decode_uf_d5_ns": 300.0,
+          "t_cycle_4k_ns": 760.0,
+          "t_cycle_300k_ns": 1080.0,
+          "reaction_budget_ns": 1000.0,
+          "cycle_to_budget_ratio_4k": 0.76,
+          "cycle_to_budget_ratio_300k": 1.08,
+          "scoring_formula": "T_cycle_4k = 300 + 2*80 + 300 = 760 ns (budget 1000 ns)"
+        }
+      }
+    ]
+  },
+  {
+    "name": "malformed.qasm3",
+    "py_parse_ok": false,
+    "findings": []
+  }
+]

@@ -48,6 +48,12 @@ In Qollab, you do not need an upload button or server backend:
      Verdict: CLEAN — all checks passed.  (exit 0)
      ```
 
+3. **Inspect the `report.html` artifact**:
+   Every run of `main.py` automatically generates a self-contained, standalone `report.html` file right next to `main.py`. This artifact contains formatted findings tables, severity chips, remediation advice, and literature citations. Open or download it to view a standalone visual triage report.
+
+4. **Companion `qfrost-qollab-ui.zip`**:
+   For an interactive three-pane browser environment, use the companion project package `qfrost-qollab-ui.zip`. It provides an OpenQASM 3 editor, preloaded fixtures, instant twin scanning, and in-browser report download with zero network calls.
+
 ---
 
 ## Master Quantum Weakness Enumeration (QWE) Table

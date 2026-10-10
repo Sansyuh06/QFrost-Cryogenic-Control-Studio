@@ -66,6 +66,35 @@ Verdict: TRIAGE REQUIRED — 1 critical, 2 high.  (exit 1)
 
 ---
 
+## Submit Your Circuit — Three Doors
+
+Visitors can submit circuits and receive quantified triage findings immediately through three separate interfaces without requiring a local installation:
+
+1. **In-Browser Web Twin (`qfrost-triage/web/`)**:
+   - Zero-dependency, zero-network pure JavaScript twin of the Python engine.
+   - Paste OpenQASM 3 or select a shipped fixture to trigger client-side parsing, all 8 rule analyzers, Snyk-style findings cards, and an instant client-side downloadable `report.html`.
+   - **GitHub Pages ready**: If you enable GitHub Pages on your repository (pointing to repository root or deploying the `qfrost-triage/web/` static files), visit `/qfrost-triage/web/` in any modern browser.
+
+2. **Qollab Three-Pane JS Project (`qfrost-triage/qollab-ui/` + `qfrost-triage/qfrost-qollab-ui.zip`)**:
+   - Packaged as a standalone Qollab project (`index.html`, `main.js`, `main.css`, `README.md`, `LICENSE` at zip root).
+   - Zero relative imports, zero `fetch`/XHR/CDN calls — completely self-contained within Qollab's execution sandbox.
+
+3. **Qollab Python Console + HTML Artifact (`qfrost-triage/qollab/` + `qfrost-triage/qfrost-qollab.zip`)**:
+   - Standard 7-file Python runner flat package.
+   - Every run executes the authoritative Python engine, prints the exact triage verdict and exit codes to the console, and writes a self-contained `report.html` directly beside `main.py`.
+
+### Parity Mechanism & Authority Gate
+- **The Python CLI engine remains the ultimate authority**: CI gates and production verifications rely on the Python scanner.
+- **Pinned Golden Parity**: The JavaScript twin's parity against Python is verified across all shipped fixtures (`examples/*.qasm3`) via `web/parity.json`, tested automatically by `node web/test_parity.mjs` and pytest.
+- **QWE-002 Heuristic Cap**: The browser twin runs a pure topological heuristic for heavy-hex layout routing. Its score is capped at `5.9` (strictly below `HIGH`), ensuring it cannot flip an exit code or verdict that the authoritative CLI wouldn't emit.
+- **Regenerating Assets**: If fixtures or constants change, regenerate parity data and bundles with:
+  ```bash
+  python tools/build_web_assets.py && python tools/build_web_assets.py --check
+  python tools/build_qollab_ui.py && python tools/build_qollab_ui.py --check
+  ```
+
+---
+
 ## GitHub Actions CI Gate (10-Line Workflow)
 
 Drop this workflow into `.github/workflows/qfrost-triage.yml` to block pull requests containing budget-destroying quantum circuits and surface findings directly in GitHub's Security / Code Scanning tab:

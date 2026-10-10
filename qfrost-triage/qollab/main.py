@@ -11,6 +11,8 @@ HONESTY & ARCHITECTURE GUARANTEE:
 """
 
 import sys
+import pathlib
+import html
 import math
 import networkx as nx
 from qiskit import QuantumCircuit
@@ -171,6 +173,76 @@ def scan_qwe006_gradient(circuit: QuantumCircuit):
     }
 
 
+def _write_report_html(findings, n_qubits: int, depth: int, verdict_text: str):
+    """Write standalone report.html next to main.py."""
+    out_path = pathlib.Path(__file__).resolve().parent / "report.html"
+    is_failing = "TRIAGE REQUIRED" in verdict_text
+    verdict_cls = "fail" if is_failing else "pass"
+
+    rows = []
+    for f in findings:
+        sev = html.escape(str(f.get("severity", "INFO")))
+        score = f"{float(f.get('score', 1.0)):.1f}"
+        fid = html.escape(str(f.get("id", "")))
+        title = html.escape(str(f.get("title", "")))
+        headline = html.escape(str(f.get("headline", "")))
+        rows.append(
+            f"<tr><td><span class='sev-chip sev-{sev}'>{sev}</span></td>"
+            f"<td><strong>{score}</strong></td>"
+            f"<td><code>{fid}</code></td>"
+            f"<td><strong>{title}</strong><br><small style='color:#a0aec0'>{headline}</small></td></tr>"
+        )
+
+    tbody = "\n".join(rows) if rows else "<tr><td colspan='4' style='text-align:center'>No weaknesses detected</td></tr>"
+
+    html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>QFrost Triage Report</title>
+  <style>
+    body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0b0e13; color: #f0f4fc; margin: 0; padding: 24px; }}
+    .report-wrap {{ max-width: 900px; margin: 0 auto; background: #121721; border: 1px solid #243044; border-radius: 8px; padding: 24px; }}
+    h1 {{ margin-top: 0; font-size: 20px; color: #fff; }}
+    .meta {{ font-family: monospace; font-size: 13px; color: #8c9cb8; margin-bottom: 16px; }}
+    .verdict {{ padding: 12px 16px; border-radius: 6px; font-weight: bold; margin-bottom: 20px; }}
+    .fail {{ background: rgba(220, 38, 38, 0.2); border: 1px solid #dc2626; color: #fca5a5; }}
+    .pass {{ background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #6ee7b7; }}
+    table {{ width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; }}
+    th, td {{ border: 1px solid #243044; padding: 10px 12px; text-align: left; }}
+    th {{ background: #1a2232; color: #f59e0b; }}
+    tr:nth-child(even) {{ background: #0e131b; }}
+    .sev-chip {{ display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; }}
+    .sev-CRITICAL {{ background: #450a0a; color: #fca5a5; border: 1px solid #dc2626; }}
+    .sev-HIGH {{ background: #431407; color: #fdba74; border: 1px solid #ea580c; }}
+    .sev-MEDIUM {{ background: #422006; color: #fde047; border: 1px solid #ca8a04; }}
+    .sev-LOW {{ background: #172554; color: #93c5fd; border: 1px solid #2563eb; }}
+    .sev-INFO {{ background: #1e293b; color: #cbd5e1; border: 1px solid #475569; }}
+    .honesty {{ font-size: 11px; color: #8c9cb8; border-top: 1px solid #243044; padding-top: 12px; }}
+  </style>
+</head>
+<body>
+  <div class="report-wrap">
+    <h1>QFrost Triage Static Analysis Report</h1>
+    <div class="meta">circuit_under_test.py · {n_qubits} qubits · depth {depth}</div>
+    <div class="verdict {verdict_cls}">Verdict: {html.escape(verdict_text)}</div>
+    <table>
+      <thead>
+        <tr><th>Severity</th><th>Score</th><th>Rule</th><th>Headline</th></tr>
+      </thead>
+      <tbody>
+        {tbody}
+      </tbody>
+    </table>
+    <div class="honesty">
+      <strong>Honesty guarantee:</strong> Static analysis only. Zero QPU execution. Quantified risk based on published cryo/coherence physics (Krantz 2019, Heinsoo 2018, Nation 2021).
+    </div>
+  </div>
+</body>
+</html>"""
+    out_path.write_text(html_content, encoding="utf-8")
+
+
 def run_triage():
     circuit = build()
     n_qubits = circuit.num_qubits
@@ -210,12 +282,22 @@ def run_triage():
             parts.append(f"{n_crit} critical")
         if n_high > 0:
             parts.append(f"{n_high} high")
-        print(f"Verdict: TRIAGE REQUIRED — {', '.join(parts)}.  (exit 1)")
-        return 1
+        verdict_text = f"TRIAGE REQUIRED — {', '.join(parts)}"
+        rc = 1
     else:
-        print("Verdict: CLEAN — all checks passed.  (exit 0)")
-        return 0
+        verdict_text = "CLEAN — all checks passed"
+        rc = 0
+
+    print(f"Verdict: {verdict_text}.  (exit {rc})")
+
+    try:
+        _write_report_html(findings, n_qubits, depth, verdict_text)
+        print("Artifact: report.html written next to main.py — open in any browser.")
+    except Exception as e:
+        print(f"Note: report.html not written ({e}).")
+
+    return rc
 
 
 if __name__ == "__main__":
-    run_triage()
+    sys.exit(run_triage())

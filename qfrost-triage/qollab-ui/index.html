@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QFrost Triage — Qollab Edition</title>
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div class="brand-title">QFrost Triage (Qollab JS UI)</div>
+        <div class="brand-tagline">Quantified Weakness Engine for Cryogenic Quantum Circuits</div>
+      </div>
+      <div>
+        <span class="badge-engine">Three-Pane Qollab Twin</span>
+      </div>
+    </header>
+
+    <div class="main-layout">
+      <!-- Input Pane -->
+      <div class="pane">
+        <div class="pane-title">
+          <span>Circuit Input (OpenQASM 3)</span>
+        </div>
+        <div class="controls-row">
+          <select id="sample-select">
+            <option value="">-- Select Shipped Fixture --</option>
+          </select>
+        </div>
+        <textarea id="circuit-input" placeholder="// Paste OpenQASM 3 circuit here or choose a fixture above..."></textarea>
+        <div class="btn-group">
+          <button id="btn-scan" class="btn btn-primary">Scan Circuit</button>
+          <button id="btn-clear" class="btn btn-secondary">Clear</button>
+        </div>
+      </div>
+
+      <!-- Findings Pane -->
+      <div class="pane">
+        <div class="pane-title">
+          <span>Triage Verdict &amp; Findings</span>
+        </div>
+        <div id="findings-container">
+          <!-- Populated by main.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
