@@ -5,10 +5,12 @@
  */
 
 (function (root, factory) {
+  const api = factory();
+  if (typeof root !== "undefined") root.QFrostScanner = api;
+  if (typeof window !== "undefined") window.QFrostScanner = api;
+  if (typeof globalThis !== "undefined") globalThis.QFrostScanner = api;
   if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    root.QFrostScanner = factory();
+    module.exports = api;
   }
 })(typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : this, function () {
 

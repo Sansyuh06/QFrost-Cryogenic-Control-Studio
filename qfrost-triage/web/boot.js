@@ -341,20 +341,44 @@
 
       let currentCircuitName = "circuit.qasm3";
 
+      let isScanning = false;
       function executeScan(nameOverride) {
-        const code = textarea ? textarea.value : "";
-        const circuitName = nameOverride || currentCircuitName;
+        if (isScanning) return;
+        isScanning = true;
+
         if (btnScan) {
-          const orig = btnScan.textContent;
           btnScan.textContent = "Scanning...";
-          setTimeout(() => { if (btnScan) btnScan.textContent = orig; }, 200);
         }
-        if (typeof QFrostScanner !== "undefined" && QFrostScanner.runScan) {
-          try {
-            const res = QFrostScanner.runScan(code, circuitName);
-            renderFindings(res, container);
-          } catch (err) {
-            console.error("Scan error:", err);
+
+        try {
+          const scanner = (typeof QFrostScanner !== "undefined" && QFrostScanner)
+            || (typeof window !== "undefined" && window.QFrostScanner)
+            || (typeof globalThis !== "undefined" && globalThis.QFrostScanner);
+
+          if (!scanner || !scanner.runScan) {
+            console.error("QFrostScanner not found in scope!");
+            if (container) {
+              container.innerHTML = `<div class="finding-card"><p style="color:var(--crit-text)">Scanner engine loading. Please try again.</p></div>`;
+            }
+            return;
+          }
+
+          const code = textarea ? textarea.value : "";
+          const circuitName = nameOverride || currentCircuitName || "circuit.qasm3";
+          const res = scanner.runScan(code, circuitName);
+          renderFindings(res, container);
+        } catch (err) {
+          console.error("Scan error:", err);
+          if (container) {
+            container.innerHTML = `<div class="finding-card" style="border-color: var(--crit-border);">
+              <div class="finding-head"><span class="sev-chip sev-CRITICAL">ERROR</span><span class="finding-id">Scanner Exception</span></div>
+              <p style="color:var(--crit-text);font-size:13px;">${esc(err.message || String(err))}</p>
+            </div>`;
+          }
+        } finally {
+          isScanning = false;
+          if (btnScan) {
+            btnScan.textContent = "Scan Circuit";
           }
         }
       }
