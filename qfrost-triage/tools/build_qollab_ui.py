@@ -150,7 +150,6 @@ def build(check: bool = False) -> int:
         "scoring.py": (ROOT / "qollab" / "scoring.py").read_text(encoding="utf-8"),
         "qwe_catalog.json": (ROOT / "qollab" / "qwe_catalog.json").read_text(encoding="utf-8"),
         "README.md": readme_text,
-        "LICENSE": get_license_content(),
     }
 
     if check:
@@ -158,7 +157,7 @@ def build(check: bool = False) -> int:
             print(f"STALE: {UI_DIR} does not exist", file=sys.stderr)
             return 1
 
-        for name in ["index.html", "main.js", "main.css", "README.md", "LICENSE"]:
+        for name in ["index.html", "main.js", "main.css", "README.md"]:
             fpath = UI_DIR / name
             if not fpath.is_file():
                 print(f"STALE: {fpath} missing", file=sys.stderr)
@@ -179,7 +178,7 @@ def build(check: bool = False) -> int:
 
     # Write UI files to qollab-ui/
     UI_DIR.mkdir(parents=True, exist_ok=True)
-    ui_only_names = ["index.html", "main.js", "main.css", "README.md", "LICENSE"]
+    ui_only_names = ["index.html", "main.js", "main.css", "README.md"]
     for name in ui_only_names:
         (UI_DIR / name).write_text(all_files[name], encoding="utf-8", newline="\n")
 

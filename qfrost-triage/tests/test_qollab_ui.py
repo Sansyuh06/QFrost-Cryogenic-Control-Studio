@@ -23,8 +23,8 @@ def test_build_qollab_ui_check():
 
 
 def test_qollab_ui_bundle_integrity():
-    """Verify the 5 flat files exist and contain zero external network references."""
-    expected_files = ["index.html", "main.js", "main.css", "README.md", "LICENSE"]
+    """Verify the flat UI files exist and contain zero external network references."""
+    expected_files = ["index.html", "main.js", "main.css", "README.md"]
     for fname in expected_files:
         fpath = UI_DIR / fname
         assert fpath.is_file(), f"Missing expected file in qollab-ui: {fname}"
