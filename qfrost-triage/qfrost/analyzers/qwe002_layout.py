@@ -52,9 +52,11 @@ def scan(circuit: QuantumCircuit, consts: Optional[Any] = None) -> List[Finding]
     coupling_map = get_heavy_hex_coupling_map(distance=distance)
 
     # Deterministic transpilation against heavy-hex topology
+    basis_gates = ["cx", "id", "rz", "sx", "x"]
     transpiled = transpile(
         circuit,
         coupling_map=coupling_map,
+        basis_gates=basis_gates,
         optimization_level=1,
         seed_transpiler=42
     )
@@ -69,16 +71,22 @@ def scan(circuit: QuantumCircuit, consts: Optional[Any] = None) -> List[Finding]
     # Compute CVSS-for-quantum score
     max_ratio = ratio
     score = calculate_cvss_score(max_ratio, config.cap_ratio)
-    severity = score_to_severity(score)
-    if severity == "CRITICAL" and ratio < 3.5:
+    
+    # Specification rule: HIGH if transpiled 2q-depth >= 2x original
+    if ratio >= 4.0:
+        severity = "CRITICAL"
+        score = max(score, 9.0)
+    elif ratio >= 2.0:
         severity = "HIGH"
-    elif ratio >= 2.0 and severity in ("LOW", "INFO"):
-        severity = "HIGH"
+        score = max(score, 7.0)
+    else:
+        severity = score_to_severity(score)
 
     # Auto-fix: generate patched circuit with SABRE layout optimization
     patched = transpile(
         circuit,
         coupling_map=coupling_map,
+        basis_gates=basis_gates,
         optimization_level=3,
         seed_transpiler=42
     )

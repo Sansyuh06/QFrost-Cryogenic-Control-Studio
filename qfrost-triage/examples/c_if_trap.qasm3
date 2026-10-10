@@ -1,0 +1,57 @@
+OPENQASM 3.0;
+include "stdgates.inc";
+
+// Chained classical feedforward conditions exceeding T2* coherence threshold
+qubit[4] q;
+bit[1] c;
+
+h q[0];
+cx q[0], q[1];
+
+// 45 consecutive conditional feedback rounds (45 * 1200ns = 54,000ns > 50,000ns T2*)
+c[0] = measure q[0];
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
+if (c[0] == true) { x q[1]; }
