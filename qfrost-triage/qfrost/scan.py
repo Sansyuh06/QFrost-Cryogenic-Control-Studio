@@ -13,6 +13,12 @@ import sys
 import tempfile
 from typing import Optional, Dict, Any
 
+# Ensure UTF-8 output stream encoding across Windows consoles
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 import qiskit
 from qiskit import QuantumCircuit
 import qiskit.qasm3
